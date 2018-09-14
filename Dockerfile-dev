@@ -1,0 +1,15 @@
+# Base Image
+FROM	python:3.6.5-alpine
+
+# Setting working directory
+WORKDIR	/usr/src/app
+
+# Dealing with requirements
+COPY ./requirements.txt	/usr/src/app/requirements.txt
+RUN	pip	install	-r	requirements.txt
+
+# Coping project
+COPY . /usr/src/app
+
+# Running server
+CMD	python manage.py run -h 0.0.0.0
