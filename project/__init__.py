@@ -19,5 +19,5 @@ db = SQLAlchemy(app)
 @app.route('/', methods=['GET'])
 def ping_pong():
 	return jsonify({
-		'data': 'Welcome to Kalkuli Receipts Service'
+		'data': 'Welcome to Kalkuli Receipts Service!'
 	})
