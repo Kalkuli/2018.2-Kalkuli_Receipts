@@ -7,6 +7,9 @@ Para instruções de como instalar o Docker e o Docker-compose clique [aqui](htt
 ## Colocando no ar
 Com o Docker e Docker-Compose instalados, basta apenas utilizar os comandos:
 
+```chmod +x entrypoint.sh```
+
+
 ```docker-compose -f docker-compose-dev.yml build```
 
 e
