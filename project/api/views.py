@@ -6,12 +6,12 @@ from project.api.models import Product
 
 from project import db
 
-
 receipts_blueprint = Blueprint('receipt', __name__) 
 
 @receipts_blueprint.route('/api/receipt', methods=['POST'])
 def add_receipt():
     post_data = request.get_json()
+    print(post_data)
 
     error_response = {
             'status': 'fail',
@@ -21,14 +21,22 @@ def add_receipt():
     if not post_data:
         return jsonify(error_response), 400
 
-    company_id = post_data.get('company_id')
-    emission_date = post_data.get('emission_date')
-    emission_place = post_data.get('emission_place')
-    tax_value = post_data.get('tax_value')
-    total_price = post_data.get('total_price')
+    company_id = post_data['receipt']['company_id']
+    emission_date = post_data['receipt']['emission_date']
+    emission_place = post_data['receipt']['emission_place']
+    tax_value = post_data['receipt']['tax_value']
+    total_price = post_data['receipt']['total_price']
+
+    products = post_data['receipt']['products']
     
     try:
-        db.session.add(Receipt(company_id, emission_date, emission_place, tax_value, total_price))
+        receipt = Receipt(company_id, emission_date, emission_place, tax_value, total_price)
+        db.session.add(receipt)
+        db.session.flush()
+
+        for product in products:
+             db.session.add(Product(receipt.id, product['quantity'], product['unit_price']))
+
         db.session.commit()
 
         response = {
@@ -38,40 +46,6 @@ def add_receipt():
             }
         }
         return jsonify(response), 201
-    except exc.IntegrityError   :
-        db.session.rollback()
-        return jsonify(error_response), 400
-
-
-products_blueprint = Blueprint('product', __name__)
-
-@products_blueprint.route('/api/products', methods=['POST'])
-def add_product():
-    post_data = request.get_json()
-
-    error_response = {
-            'status': 'fail',
-            'message': 'empty json'
-    }
-
-    if not post_data:
-        return jsonify(error_response), 400
-
-    receipt_id = post_data.get('receipt_id')
-    quantity = post_data.get('quantity')
-    unit_price = post_data.get('unit_price')
-    
-    try:
-        db.session.add(Receipt(receipt_id, quantity, unit_price))
-        db.session.commit()
-
-        response = {
-            'status': 'success',
-            'data': {
-                'message': 'Receipt was created!'
-            }
-        }
-        return jsonify(response), 201
-    except exc.IntegrityError   :
+    except exc.IntegrityError:
         db.session.rollback()
         return jsonify(error_response), 400
