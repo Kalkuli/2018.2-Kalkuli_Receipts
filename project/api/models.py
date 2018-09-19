@@ -12,7 +12,6 @@ class Receipt(db.Model):
     emission_place = db.Column(db.String(128), nullable=False)
     tax_value      = db.Column(db.Float,    nullable=False)
     total_price    = db.Column(db.Float,    nullable=False)
-    tagUseReports  = db.relationship('product',   backref='receipt', lazy=True)
 
     def __init__(self, company_id, emission_date, emission_place, tax_value, total_price):
         self.company_id     = company_id 
@@ -36,6 +35,7 @@ class Product(db.Model):
     __tablename__ = 'product'
     id         = db.Column(db.Integer,  primary_key=True, autoincrement=True)
     receipt_id = db.Column(db.Integer, db.ForeignKey('receipt.id'), nullable=False)
+    receipt    = db.relationship('Receipt', backref=db.backref('products', lazy=True))
     quantity   = db.Column(db.Integer, nullable=False)
     unit_price = db.Column(db.Float, nullable=False)
 
@@ -43,3 +43,11 @@ class Product(db.Model):
         self.receipt_id = receipt_id
         self.quantity   = quantity
         self.unit_price = unit_price
+
+    def to_json(self):
+        return {
+            'id':self.id,
+            'receipt_id':self.receipt_id,
+            'quantity':self.quantity,
+            'unit_price':self.unit_price
+        }

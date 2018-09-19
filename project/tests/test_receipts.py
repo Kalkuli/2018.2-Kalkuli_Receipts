@@ -11,8 +11,6 @@ class TestReceiptservice(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn('Welcome to Kalkuli Receipts Service!', data['data'])
 
-    def test_
-
 
         
 if __name__ == '__main__':

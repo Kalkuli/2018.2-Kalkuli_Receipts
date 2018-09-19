@@ -2,6 +2,7 @@ from flask import request, jsonify, Blueprint
 
 from sqlalchemy import exc 
 from project.api.models import Receipt
+from project.api.models import Product
 
 from project import db
 
@@ -14,7 +15,7 @@ def add_receipt():
 
     error_response = {
             'status': 'fail',
-            'message': 'empty json'
+            'message': 'wrong json'
     }
 
     if not post_data:
@@ -39,8 +40,38 @@ def add_receipt():
         return jsonify(response), 201
     except exc.IntegrityError   :
         db.session.rollback()
-        print("eita giovanna")
         return jsonify(error_response), 400
 
-#@receipts_blueprint.route('/api/receipt/<receipt_id>', methods=['GET'])
-#def get_single_receipt
+
+products_blueprint = Blueprint('product', __name__)
+
+@products_blueprint.route('/api/products', methods=['POST'])
+def add_product():
+    post_data = request.get_json()
+
+    error_response = {
+            'status': 'fail',
+            'message': 'empty json'
+    }
+
+    if not post_data:
+        return jsonify(error_response), 400
+
+    receipt_id = post_data.get('receipt_id')
+    quantity = post_data.get('quantity')
+    unit_price = post_data.get('unit_price')
+    
+    try:
+        db.session.add(Receipt(receipt_id, quantity, unit_price))
+        db.session.commit()
+
+        response = {
+            'status': 'success',
+            'data': {
+                'message': 'Receipt was created!'
+            }
+        }
+        return jsonify(response), 201
+    except exc.IntegrityError   :
+        db.session.rollback()
+        return jsonify(error_response), 400
