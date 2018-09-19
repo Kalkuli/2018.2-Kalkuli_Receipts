@@ -8,7 +8,7 @@ class Receipt(db.Model):
 
     id             = db.Column(db.Integer,  primary_key=True, autoincrement=True)
     company_id     = db.Column(db.Integer,  nullable=False)
-    emission_date  = db.Column(db.String, nullable=False)
+    emission_date  = db.Column(db.DateTime, nullable=False)
     emission_place = db.Column(db.String(128), nullable=False)
     tax_value      = db.Column(db.Float,    nullable=False)
     total_price    = db.Column(db.Float,    nullable=False)
