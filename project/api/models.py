@@ -19,7 +19,6 @@ class Receipt(db.Model):
         self.emission_place = emission_place 
         self.tax_value      = tax_value 
         self.total_price    = total_price 
-<<<<<<< eed37aa5ba8a2f21aecf5291c4109a93dfbd7975
 
     def to_json(self):
         return {
@@ -31,9 +30,6 @@ class Receipt(db.Model):
             'total_price': self.total_price
         }
 
-=======
-    
->>>>>>> Create receipts-all method
 
 class Product(db.Model):
     __tablename__ = 'product'
