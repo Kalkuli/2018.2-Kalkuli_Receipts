@@ -15,9 +15,5 @@ app.config.from_object(app_settings)
 # Instanciate Database
 db = SQLAlchemy(app)
 
-
-@app.route('/', methods=['GET'])
-def ping_pong():
-	return jsonify({
-		'data': 'Welcome to Kalkuli Receipts Service!'
-	})
+from project.api.views import receipts_blueprint
+app.register_blueprint(receipts_blueprint)
