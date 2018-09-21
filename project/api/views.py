@@ -8,12 +8,12 @@ from project import db
 
 receipts_blueprint = Blueprint('receipt', __name__) 
 
-@receipts_blueprint.route('/receipt', methods=['GET'])
+@receipts_blueprint.route('/receipts', methods=['GET'])
 def get_all_receipts():
     response = {
         'status': 'success',
         'data': {
-            'receipt': [receipt.json() for receipt in Receipt.query.all()]
+            'receipt': [receipt.to_json() for receipt in Receipt.query.all()]
         }
     } 
     return jsonify(response), 200
