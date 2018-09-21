@@ -32,13 +32,18 @@ def add_receipt():
     if not post_data:
         return jsonify(error_response), 400
 
-    company_id = post_data['receipt']['company_id']
-    emission_date = post_data['receipt']['emission_date']
-    emission_place = post_data['receipt']['emission_place']
-    tax_value = post_data['receipt']['tax_value']
-    total_price = post_data['receipt']['total_price']
+    receipt = post_data.get('receipt')
 
-    products = post_data['receipt']['products']
+    company_id = receipt.get('company_id')
+    emission_date = receipt.get('emission_date')
+    emission_place = receipt.get('emission_place')
+    tax_value = receipt.get('tax_value')
+    total_price = receipt.get('total_price')
+
+    products = receipt.get('products')
+
+    if not products:
+        return jsonify(error_response), 400
     
     try:
         receipt = Receipt(company_id, emission_date, emission_place, tax_value, total_price)
@@ -46,7 +51,7 @@ def add_receipt():
         db.session.flush()
 
         for product in products:
-             db.session.add(Product(receipt.id, product['quantity'], product['unit_price']))
+             db.session.add(Product(receipt.id, product.get('quantity'), product.get('unit_price')))
 
         db.session.commit()
 
