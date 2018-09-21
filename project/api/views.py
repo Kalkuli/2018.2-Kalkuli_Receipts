@@ -13,7 +13,7 @@ def get_all_receipts():
     response = {
         'status': 'success',
         'data': {
-            'receipt': [receipt.json() for receipt in Receipt.query.all()]
+            'receipt': [receipt.to_json() for receipt in Receipt.query.all()]
         }
     } 
     return jsonify(response), 200
