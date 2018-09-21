@@ -24,7 +24,7 @@ class Receipt(db.Model):
         return {
             'id': self.id,
             'company_id': self.company_id,
-            'emission_date': self.emission_date,
+            'emission_date': self.emission_date.date().isoformat(),
             'emission_place': self.emission_place,
             'tax_value': self.tax_value,
             'total_price': self.total_price
