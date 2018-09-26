@@ -1,32 +1,32 @@
 from flask import request, jsonify, Blueprint
 
-from sqlalchemy import exc 
+from sqlalchemy import exc
 from project.api.models import Receipt
 from project.api.models import Product
 
 from project import db
 
-receipts_blueprint = Blueprint('receipt', __name__) 
+receipts_blueprint = Blueprint('receipt', __name__)
+
 
 @receipts_blueprint.route('/receipts', methods=['GET'])
 def get_all_receipts():
     response = {
         'status': 'success',
         'data': {
-            'receipt': [receipt.to_json() for receipt in Receipt.query.all()]
+            'receipts': [receipt.to_json() for receipt in Receipt.query.all()]
         }
-    } 
+    }
     return jsonify(response), 200
- 
+
 
 @receipts_blueprint.route('/receipt', methods=['POST'])
 def add_receipt():
     post_data = request.get_json()
-    print(post_data)
 
     error_response = {
-            'status': 'fail',
-            'message': 'wrong json'
+        'status': 'fail',
+        'message': 'wrong json'
     }
 
     if not post_data:
@@ -43,16 +43,17 @@ def add_receipt():
 
     products = receipt.get('products')
 
-    if not products:
+    if products is None:
         return jsonify(error_response), 400
-    
+
     try:
         receipt = Receipt(company_id, emission_date, emission_place, cnpj, tax_value, total_price)
         db.session.add(receipt)
         db.session.flush()
 
         for product in products:
-             db.session.add(Product(receipt.id, product.get('quantity'), product.get('unit_price')))
+            db.session.add(Product(receipt.id, product.get(
+                'quantity'), product.get('unit_price')))
 
         db.session.commit()
 
@@ -65,7 +66,8 @@ def add_receipt():
         return jsonify(response), 201
     except exc.IntegrityError:
         db.session.rollback()
-        return jsonify(error_response), 400
+        return jsonify({'status': 'fail', 'message': 'db_ex'}), 400
+
 
 @receipts_blueprint.route('/receipt/<receipt_id>', methods=['GET'])
 def get_single_receipt(receipt_id):
@@ -78,7 +80,7 @@ def get_single_receipt(receipt_id):
 
         if not receipt:
             return jsonify(error_response), 404
-        
+
         response = {
             'status': 'success',
             'data': receipt.to_json()
