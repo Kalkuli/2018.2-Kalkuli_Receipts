@@ -333,7 +333,15 @@ class TestReceiptservice(BaseTestCase):
             self.assertIn('GitHub', data['data']['emission_place'])
             self.assertEqual(20.0, data['data']['tax_value'])
             self.assertEqual(50.0, data['data']['total_price'])
-            
+
+    def test_get_single_receipt_no_id(self):
+        with self.client:
+            response = self.client.get('/receipt/noid')
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 404)
+            self.assertIn('fail', data['status'])
+            self.assertIn('Receipt not found', data['message'])
+
 
 
 if __name__ == '__main__':
