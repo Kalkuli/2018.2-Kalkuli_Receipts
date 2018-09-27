@@ -342,6 +342,14 @@ class TestReceiptservice(BaseTestCase):
             self.assertIn('fail', data['status'])
             self.assertIn('Receipt not found', data['message'])
 
+    def test_get_single_receipt_inexistent_id(self):
+        with self.client:
+            response = self.client.get('/receipt/100000')
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 404)
+            self.assertIn('fail', data['status'])
+            self.assertIn('Receipt not found', data['message'])
+
 
 
 if __name__ == '__main__':
