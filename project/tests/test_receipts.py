@@ -316,6 +316,41 @@ class TestReceiptservice(BaseTestCase):
             self.assertIn('wrong json', data['message'])
             self.assertIn('fail', data['status'])
 
+    def test_get_single_receipt(self):
+        date_text = "22-09-2018"
+        date = datetime.strptime(date_text, '%d-%m-%Y').date() 
+        receipt = add_receipt(15, date, "GitHub", 20.0, 50.0)
+
+        with self.client:
+            response = self.client.get(f'/receipt/{receipt.id}')
+            data = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('success', data['status'])
+
+            self.assertEqual(15, data['data']['company_id'])
+            self.assertEqual(date.isoformat(), data['data']['emission_date'])
+            self.assertIn('GitHub', data['data']['emission_place'])
+            self.assertEqual(20.0, data['data']['tax_value'])
+            self.assertEqual(50.0, data['data']['total_price'])
+
+    def test_get_single_receipt_no_id(self):
+        with self.client:
+            response = self.client.get('/receipt/noid')
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 404)
+            self.assertIn('fail', data['status'])
+            self.assertIn('Receipt not found', data['message'])
+
+    def test_get_single_receipt_inexistent_id(self):
+        with self.client:
+            response = self.client.get('/receipt/100000')
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 404)
+            self.assertIn('fail', data['status'])
+            self.assertIn('Receipt not found', data['message'])
+
+
 
 if __name__ == '__main__':
     unittest.main()

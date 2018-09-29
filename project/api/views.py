@@ -65,3 +65,24 @@ def add_receipt():
     except exc.IntegrityError:
         db.session.rollback()
         return jsonify(error_response), 400
+
+@receipts_blueprint.route('/receipt/<receipt_id>', methods=['GET'])
+def get_single_receipt(receipt_id):
+    error_response = {
+        'status': 'fail',
+        'message': 'Receipt not found'
+    }
+    try:
+        receipt = Receipt.query.filter_by(id=int(receipt_id)).first()
+
+        if not receipt:
+            return jsonify(error_response), 404
+        
+        response = {
+            'status': 'success',
+            'data': receipt.to_json()
+        }
+    except ValueError:
+        return jsonify(error_response), 404
+
+    return jsonify(response), 200
