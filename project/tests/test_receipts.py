@@ -7,8 +7,8 @@ from project import db
 
 
 
-def add_receipt(company_id, emission_date, emission_place, tax_value, total_price):
-    receipt = Receipt(company_id, emission_date, emission_place, tax_value, total_price)
+def add_receipt(company_id, emission_date, emission_place, cnpj, tax_value, total_price):
+    receipt = Receipt(company_id, emission_date, emission_place, cnpj, tax_value, total_price)
     db.session.add(receipt)
     db.session.commit()
     return receipt
@@ -18,8 +18,8 @@ class TestReceiptservice(BaseTestCase):
         date_text = "22-09-2018"
         date = datetime.strptime(date_text, '%d-%m-%Y').date()
 
-        add_receipt(15, date, "GitHub", 20.0, 50.0)
-        add_receipt(16, date, "Gitlab", 15.0, 20.0)
+        add_receipt(15, date, "GitHub", "00.000.000/0000-00", 20.0, 50.0)
+        add_receipt(16, date, "Gitlab", "00.000.000/0000-00", 15.0, 20.0)
 
         with self.client:
             response = self.client.get('/receipts')
@@ -33,12 +33,14 @@ class TestReceiptservice(BaseTestCase):
             self.assertEqual(15, data['data']['receipt'][0]['company_id'])
             self.assertEqual(date.isoformat(), data['data']['receipt'][0]['emission_date'])
             self.assertIn('GitHub', data['data']['receipt'][0]['emission_place'])
+            self.assertIn('00.000.000/0000-00', data['data']['receipt'][0]['cnpj'])
             self.assertEqual(20.0, data['data']['receipt'][0]['tax_value'])
             self.assertEqual(50.0, data['data']['receipt'][0]['total_price'])
 
             self.assertEqual(16, data['data']['receipt'][1]['company_id'])
             self.assertEqual(date.isoformat(), data['data']['receipt'][1]['emission_date'])
             self.assertIn('Gitlab', data['data']['receipt'][1]['emission_place'])
+            self.assertIn('00.000.000/0000-00', data['data']['receipt'][1]['cnpj'])
             self.assertEqual(15.0, data['data']['receipt'][1]['tax_value'])
             self.assertEqual(20.0, data['data']['receipt'][1]['total_price'])
 
@@ -56,6 +58,7 @@ class TestReceiptservice(BaseTestCase):
                         'company_id': '1234',
                         'emission_date': date.isoformat(),
                         'emission_place': 'place',
+                        'cnpj': '00.000.000/0000-00',
                         'tax_value': '123.12',
                         'total_price': '456.45',
                         'products':[
@@ -99,6 +102,7 @@ class TestReceiptservice(BaseTestCase):
                     'receipt':{
                         'emission_date': date.isoformat(),
                         'emission_place': 'place',
+                        'cnpj': '00.000.000/0000-00',
                         'tax_value': '123.12',
                         'total_price': '456.45',
                         'products':[
@@ -124,6 +128,7 @@ class TestReceiptservice(BaseTestCase):
                     'receipt':{
                         'company_id': '1234',
                         'emission_place': 'place',
+                        'cnpj': '00.000.000/0000-00',
                         'tax_value': '123.12',
                         'total_price': '456.45',
                         'products':[
@@ -153,6 +158,37 @@ class TestReceiptservice(BaseTestCase):
                     'receipt':{
                         'company_id': '1234',
                         'emission_date': date.isoformat(),
+                        'cnpj': '00.000.000/0000-00',
+                        'tax_value': '123.12',
+                        'total_price': '456.45',
+                        'products':[
+                            {'quantity': 2, 'unit_price': 13.12},
+                            {'quantity': 1, 'unit_price': 12.13}
+                        ]
+                    }
+                }),
+                content_type='application/json',
+            )
+            
+            data = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 400)
+            self.assertIn('wrong json', data['message'])
+            self.assertIn('fail', data['status'])
+
+    def test_add_task_missing_cnpj(self):
+
+        date_text = "22-09-2018"
+        date = datetime.strptime(date_text, '%d-%m-%Y').date()
+
+        with self.client:
+            response = self.client.post(
+                '/receipt',
+                data = json.dumps({
+                    'receipt':{
+                        'company_id': '1234',
+                        'emission_date': date.isoformat(),
+                        'emission_place': 'place',
                         'tax_value': '123.12',
                         'total_price': '456.45',
                         'products':[
@@ -183,6 +219,7 @@ class TestReceiptservice(BaseTestCase):
                         'company_id': '1234',
                         'emission_date': date.isoformat(),
                         'emission_place': 'place',
+                        'cnpj': '00.000.000/0000-00',
                         'total_price': '456.45',
                         'products':[
                             {'quantity': 2, 'unit_price': 13.12},
@@ -212,6 +249,7 @@ class TestReceiptservice(BaseTestCase):
                         'company_id': '1234',
                         'emission_date': date.isoformat(),
                         'emission_place': 'place',
+                        'cnpj': '00.000.000/0000-00',
                         'tax_value': '123.12',
                         'products':[
                             {'quantity': 2, 'unit_price': 13.12},
@@ -242,6 +280,7 @@ class TestReceiptservice(BaseTestCase):
                         'company_id': '1234',
                         'emission_date': date.isoformat(),
                         'emission_place': 'place',
+                        'cnpj': '00.000.000/0000-00',
                         'tax_value': '123.12',
                         'total_price': '456.45'
                     }
@@ -268,6 +307,7 @@ class TestReceiptservice(BaseTestCase):
                         'company_id': '1234',
                         'emission_date': date.isoformat(),
                         'emission_place': 'place',
+                        'cnpj': '00.000.000/0000-00',
                         'tax_value': '123.12',
                         'total_price': '456.45',
                         'products':[
@@ -299,6 +339,7 @@ class TestReceiptservice(BaseTestCase):
                         'company_id': '1234',
                         'emission_date': date.isoformat(),
                         'emission_place': 'place',
+                        'cnpj': '00.000.000/0000-00',
                         'tax_value': '123.12',
                         'total_price': '456.45',
                         'products':[
@@ -319,7 +360,7 @@ class TestReceiptservice(BaseTestCase):
     def test_get_single_receipt(self):
         date_text = "22-09-2018"
         date = datetime.strptime(date_text, '%d-%m-%Y').date() 
-        receipt = add_receipt(15, date, "GitHub", 20.0, 50.0)
+        receipt = add_receipt(15, date, "GitHub", "00.000.000/0000-00", 20.0, 50.0)
 
         with self.client:
             response = self.client.get(f'/receipt/{receipt.id}')
@@ -331,6 +372,7 @@ class TestReceiptservice(BaseTestCase):
             self.assertEqual(15, data['data']['company_id'])
             self.assertEqual(date.isoformat(), data['data']['emission_date'])
             self.assertIn('GitHub', data['data']['emission_place'])
+            self.assertIn('00.000.000/0000-00', data['data']['cnpj'])
             self.assertEqual(20.0, data['data']['tax_value'])
             self.assertEqual(50.0, data['data']['total_price'])
 
