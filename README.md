@@ -39,7 +39,7 @@ Abra outro terminal, e execute o comando:
 
 
 ```
-docker-compose -f docker-compose-dev.yml run base python manage.py recreate_db
+docker-compose -f docker-compose-dev.yml run base python manage.py recreatedb
 ```
 
 
