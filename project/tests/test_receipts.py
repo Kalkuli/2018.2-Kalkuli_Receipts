@@ -192,6 +192,37 @@ class TestReceiptservice(BaseTestCase):
                         'emission_place': 'place',
                         'tax_value': '123.12',
                         'total_price': '456.45',
+                        'products':[
+                            {'quantity': 2, 'unit_price': 13.12},
+                            {'quantity': 1, 'unit_price': 12.13}
+                        ]
+                    }
+                }),
+                content_type='application/json',
+            )
+            
+            data = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 400)
+            self.assertIn('wrong json', data['message'])
+            self.assertIn('fail', data['status'])
+
+    def test_add_task_missing_cnpj(self):
+
+        date_text = "22-09-2018"
+        date = datetime.strptime(date_text, '%d-%m-%Y').date()
+
+        with self.client:
+            response = self.client.post(
+                '/receipt',
+                data = json.dumps({
+                    'receipt':{
+                        'company_id': '1234',
+                        'emission_date': date.isoformat(),
+                        'emission_place': 'place',
+                        'tax_value': '123.12',
+                        'cnpj': '00.000.000/0000-00',
+                        'total_price': '456.45',
                         'products': [
                             {'quantity': 2, 'unit_price': 13.12},
                             {'quantity': 1, 'unit_price': 12.13}
