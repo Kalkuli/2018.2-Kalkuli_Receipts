@@ -19,7 +19,7 @@ cli = FlaskGroup(app)
 
 # Create command
 @cli.command()
-def recreate_db():
+def recreatedb():
     db.drop_all()
     db.create_all()
     db.session.commit()
