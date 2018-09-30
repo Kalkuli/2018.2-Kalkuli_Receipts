@@ -192,7 +192,7 @@ class TestReceiptservice(BaseTestCase):
                         'emission_place': 'place',
                         'tax_value': '123.12',
                         'total_price': '456.45',
-                        'products':[
+                        'products': [
                             {'quantity': 2, 'unit_price': 13.12},
                             {'quantity': 1, 'unit_price': 12.13}
                         ]
@@ -200,7 +200,7 @@ class TestReceiptservice(BaseTestCase):
                 }),
                 content_type='application/json',
             )
-            
+
             data = json.loads(response.data.decode())
 
             self.assertEqual(response.status_code, 400)
@@ -215,8 +215,8 @@ class TestReceiptservice(BaseTestCase):
         with self.client:
             response = self.client.post(
                 '/receipt',
-                data = json.dumps({
-                    'receipt':{
+                data=json.dumps({
+                    'receipt': {
                         'company_id': '1234',
                         'emission_date': date.isoformat(),
                         'emission_place': 'place',
