@@ -10,13 +10,15 @@ class Receipt(db.Model):
     company_id     = db.Column(db.Integer,  nullable=False)
     emission_date  = db.Column(db.DateTime, nullable=False)
     emission_place = db.Column(db.String(128), nullable=False)
+    cnpj           = db.Column(db.String, nullable=False)
     tax_value      = db.Column(db.Float,    nullable=False)
     total_price    = db.Column(db.Float,    nullable=False)
 
-    def __init__(self, company_id, emission_date, emission_place, tax_value, total_price):
+    def __init__(self, company_id, emission_date, emission_place, cnpj, tax_value, total_price):
         self.company_id     = company_id 
         self.emission_date  = emission_date 
-        self.emission_place = emission_place 
+        self.emission_place = emission_place
+        self.cnpj           = cnpj
         self.tax_value      = tax_value 
         self.total_price    = total_price 
 
@@ -26,6 +28,7 @@ class Receipt(db.Model):
             'company_id': self.company_id,
             'emission_date': self.emission_date.date().isoformat(),
             'emission_place': self.emission_place,
+            'cnpj': self.cnpj,
             'tax_value': self.tax_value,
             'total_price': self.total_price
         }
