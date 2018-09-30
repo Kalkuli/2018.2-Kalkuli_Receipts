@@ -66,7 +66,7 @@ def add_receipt():
         return jsonify(response), 201
     except exc.IntegrityError:
         db.session.rollback()
-        return jsonify({'status': 'fail', 'message': 'db_ex'}), 400
+        return jsonify(error_response), 400
 
 
 @receipts_blueprint.route('/receipt/<receipt_id>', methods=['GET'])
