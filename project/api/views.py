@@ -112,10 +112,15 @@ def filter_date():
     end = datetime.datetime.strptime(date_to, '%Y-%m-%d').date()
 
     response = {
-        'receipt': [receipt.to_json() for receipt in Receipt.query.filter(Receipt.emission_date <= end).filter(Receipt.emission_date >= start)]
+        'receipts': [receipt.to_json() for receipt in Receipt.query.filter(Receipt.emission_date <= end).filter(Receipt.emission_date >= start)]
     }
 
     if not response:
         return jsonify(error_response), 400
+
+    if not response.get('receipts'):
+        return jsonify({
+            'empty': 'no receipts'
+        }), 400
 
     return jsonify(response), 200
