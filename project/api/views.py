@@ -124,3 +124,37 @@ def filter_date():
         }), 400
 
     return jsonify(response), 200
+
+@receipts_blueprint.route('/select_date', method=['GET'])
+def get_filter_date():
+    get_data_date = request.to_json()
+    error_response = {
+        'status': 'fail',
+        'message': 'Receipts not found in that period' 
+    }
+
+    if not get_data_date: 
+        return jsonify(error_response), 400
+
+    
+    dates = get_data_date.get('dates')
+
+    date_from = dates.get('date_from')
+    date_to = dates.get('date_to')
+
+    start = datetime.datetime.strptime(date_from, '%Y-%m-%d').date()
+    end = datetime.datetime.strptime(date_to, '%Y-%m-%d').date()
+
+    response = {
+        'receipts': [receipt.to_json() for receipt in Receipt.query.filter(Receipt.emission_date <= end).filter(Receipt.emission_date >= start)]
+    }
+
+    if not response:
+        return jsonify(error_response), 400
+
+    if not response.get('receipts'):
+        return jsonify({
+            'empty': 'no receipts'
+        }), 400
+
+    return jsonify(response), 200
