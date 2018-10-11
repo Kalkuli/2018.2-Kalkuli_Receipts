@@ -391,6 +391,158 @@ class TestReceiptservice(BaseTestCase):
             self.assertIn('fail', data['status'])
             self.assertIn('Receipt not found', data['message'])
 
+    def test_filter_date(self):
+
+        date_from = "22-07-2018"
+        start = datetime.strptime(date_from, '%d-%m-%Y').date()
+        date_to = "22-10-2018"
+        end = datetime.strptime(date_to, '%d-%m-%Y').date()
+
+        date_text = "22-09-2018"
+        date = datetime.strptime(date_text, '%d-%m-%Y').date()
+
+        add_receipt(15, date, "GitHub", 20.0, 50.0)
+        add_receipt(16, date, "Gitlab", 15.0, 20.0)
+
+
+        with self.client:
+
+            response = self.client.post(
+                '/select_date',
+                data = json.dumps({
+                    "dates": {
+                        "date_from": start.isoformat(),
+                        "date_to": end.isoformat()
+                    }
+                }),
+                content_type = 'application/json',
+            )
+
+            data = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 200)
+
+            self.assertEqual(15, data['receipts'][0]['company_id'])
+            self.assertEqual(date.isoformat(), data['receipts'][0]['emission_date'])
+            self.assertIn('GitHub', data['receipts'][0]['emission_place'])
+            self.assertEqual(20.0, data['receipts'][0]['tax_value'])
+            self.assertEqual(50.0, data['receipts'][0]['total_price'])
+
+            self.assertEqual(16, data['receipts'][1]['company_id'])
+            self.assertEqual(date.isoformat(), data['receipts'][1]['emission_date'])
+            self.assertIn('Gitlab', data['receipts'][1]['emission_place'])
+            self.assertEqual(15.0, data['receipts'][1]['tax_value'])
+            self.assertEqual(20.0, data['receipts'][1]['total_price'])
+            
+
+    def test_filter_date_no_receipts(self):
+        date_from = "22-07-1900"
+        start = datetime.strptime(date_from, '%d-%m-%Y').date()
+        date_to = "22-09-1900"
+        end = datetime.strptime(date_from, '%d-%m-%Y').date()
+
+        date_text = "22-09-2018"
+        date = datetime.strptime(date_text, '%d-%m-%Y').date()
+
+        add_receipt(15, date, "GitHub", 20.0, 50.0)
+        add_receipt(16, date, "Gitlab", 15.0, 20.0)
+
+        with self.client:
+
+            response = self.client.post(
+                '/select_date',
+                data = json.dumps({
+                    "dates": {
+                        "date_from": start.isoformat(),
+                        "date_to": end.isoformat()
+                    }
+                }),
+                content_type = 'application/json',
+            )
+
+            data = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 400)
+            self.assertIn('no receipts', data['empty'])
+
+    def test_filter_date_missing_date_from(self):
+        date_to = "22-10-2018"
+        end = datetime.strptime(date_to, '%d-%m-%Y').date()
+
+        date_text = "22-09-2018"
+        date = datetime.strptime(date_text, '%d-%m-%Y').date()
+
+        add_receipt(15, date, "GitHub", 20.0, 50.0)
+        add_receipt(16, date, "Gitlab", 15.0, 20.0)
+
+
+        with self.client:
+
+            response = self.client.post(
+                '/select_date',
+                data = json.dumps({
+                    "dates": {
+                        "date_to": end.isoformat()
+                    }
+                }),
+                content_type = 'application/json',
+            )
+
+            data = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 200)
+
+            self.assertEqual(15, data['receipts'][0]['company_id'])
+            self.assertEqual(date.isoformat(), data['receipts'][0]['emission_date'])
+            self.assertIn('GitHub', data['receipts'][0]['emission_place'])
+            self.assertEqual(20.0, data['receipts'][0]['tax_value'])
+            self.assertEqual(50.0, data['receipts'][0]['total_price'])
+
+            self.assertEqual(16, data['receipts'][1]['company_id'])
+            self.assertEqual(date.isoformat(), data['receipts'][1]['emission_date'])
+            self.assertIn('Gitlab', data['receipts'][1]['emission_place'])
+            self.assertEqual(15.0, data['receipts'][1]['tax_value'])
+            self.assertEqual(20.0, data['receipts'][1]['total_price'])
+
+
+    def test_filter_date_missing_date_to(self):
+        date_from = "22-07-2018"
+        start = datetime.strptime(date_from, '%d-%m-%Y').date()
+
+        date_text = "22-09-2018"
+        date = datetime.strptime(date_text, '%d-%m-%Y').date()
+
+        add_receipt(15, date, "GitHub", 20.0, 50.0)
+        add_receipt(16, date, "Gitlab", 15.0, 20.0)
+
+
+        with self.client:
+
+            response = self.client.post(
+                '/select_date',
+                data = json.dumps({
+                    "dates": {
+                        "date_from": start.isoformat()
+                    }
+                }),
+                content_type = 'application/json',
+            )
+
+            data = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 200)
+
+            self.assertEqual(15, data['receipts'][0]['company_id'])
+            self.assertEqual(date.isoformat(), data['receipts'][0]['emission_date'])
+            self.assertIn('GitHub', data['receipts'][0]['emission_place'])
+            self.assertEqual(20.0, data['receipts'][0]['tax_value'])
+            self.assertEqual(50.0, data['receipts'][0]['total_price'])
+
+            self.assertEqual(16, data['receipts'][1]['company_id'])
+            self.assertEqual(date.isoformat(), data['receipts'][1]['emission_date'])
+            self.assertIn('Gitlab', data['receipts'][1]['emission_place'])
+            self.assertEqual(15.0, data['receipts'][1]['tax_value'])
+            self.assertEqual(20.0, data['receipts'][1]['total_price'])
 
 if __name__ == '__main__':
     unittest.main()
