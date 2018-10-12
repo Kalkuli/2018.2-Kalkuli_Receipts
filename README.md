@@ -10,6 +10,13 @@
  </div> 
 
 
+## Deploy    
+
+A ultima versão do app pode ser encontrada em: https://kalkuli-receipts.herokuapp.com
+
+***   
+
+
 ## Configurando o ambiente     
 
 Para instruções de como instalar o _Docker_ e o _Docker-Compose_ clique [aqui](https://github.com/Kalkuli/2018.2-Kalkuli_Front-End/blob/master/README.md).
