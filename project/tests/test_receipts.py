@@ -410,7 +410,7 @@ class TestReceiptservice(BaseTestCase):
             response = self.client.post(
                 '/select_date',
                 data = json.dumps({
-                    "dates": {
+                    "period": {
                         "date_from": start.isoformat(),
                         "date_to": end.isoformat()
                     }
@@ -452,7 +452,7 @@ class TestReceiptservice(BaseTestCase):
             response = self.client.post(
                 '/select_date',
                 data = json.dumps({
-                    "dates": {
+                    "period": {
                         "date_from": start.isoformat(),
                         "date_to": end.isoformat()
                     }
@@ -481,7 +481,7 @@ class TestReceiptservice(BaseTestCase):
             response = self.client.post(
                 '/select_date',
                 data = json.dumps({
-                    "dates": {
+                    "period": {
                         "date_to": end.isoformat()
                     }
                 }),
@@ -521,7 +521,7 @@ class TestReceiptservice(BaseTestCase):
             response = self.client.post(
                 '/select_date',
                 data = json.dumps({
-                    "dates": {
+                    "period": {
                         "date_from": start.isoformat()
                     }
                 }),

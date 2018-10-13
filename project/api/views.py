@@ -103,7 +103,7 @@ def filter_date():
     #if not post_data_date:
         #return jsonify(error_response), 400
 
-    date = post_data_date.get('dates')
+    date = post_data_date.get('period')
 
     date_from = date.get('date_from')
     date_to = date.get('date_to')
