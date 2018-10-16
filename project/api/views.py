@@ -124,5 +124,28 @@ def filter_date():
         return jsonify({
             'empty': 'no receipts'
         }), 400
+
+    return jsonify(response), 200
     
+@receipts_blueprint.route('/receipt/<receipt_id>', methods=['DELETE'])
+def delete_receipt(receipt_id):
+    error_response = {
+        'status': 'fail',
+        'message': 'Receipt not found'
+    }
+    try:
+        receipt = Receipt.query.filter_by(id=int(receipt_id)).first()
+        db.session.delete(receipt)
+        db.session.commit()
+
+        response = {
+            'status': 'success',
+            'data': {
+                'message': 'Receipt deleted'
+            }
+        }
+
+    except ValueError:
+        return jsonify(error_response), 404
+
     return jsonify(response), 200
