@@ -575,5 +575,20 @@ class TestReceiptservice(BaseTestCase):
             self.assertEqual(15.0, data['receipts'][1]['tax_value'])
             self.assertEqual(20.0, data['receipts'][1]['total_price'])
 
+    def test_remove_receipt(self):
+        date_text = "22-09-2018"
+        date = datetime.strptime(date_text, '%d-%m-%Y').date()
+
+        receipt = add_receipt(15, date, "GitHub", "00.000.000/0000-00", 20.0, 50.0)
+
+        with self.client:
+            response = self.client.delete(f'/receipt/{receipt.id}')
+            data = json.loads(response.data.decode())
+            
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('success', data['status'])
+            self.assertIn('Receipt deleted', data['data']['message'])
+            
+
 if __name__ == '__main__':
     unittest.main()
