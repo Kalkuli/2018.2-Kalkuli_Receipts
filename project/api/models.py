@@ -1,6 +1,7 @@
 from project import db
 
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship, backref
 
 
 class Receipt(db.Model):
@@ -45,7 +46,7 @@ class Product(db.Model):
     __tablename__ = 'product'
     id         = db.Column(db.Integer,  primary_key=True, autoincrement=True)
     receipt_id = db.Column(db.Integer, db.ForeignKey('receipt.id'), nullable=False)
-    receipt    = db.relationship('Receipt', backref=db.backref('products', lazy=True))
+    receipt    = db.relationship('Receipt', backref=db.backref('products', lazy=True, cascade='all, delete-orphan'))
     quantity   = db.Column(db.Integer, nullable=False)
     unit_price = db.Column(db.Float, nullable=False)
 
