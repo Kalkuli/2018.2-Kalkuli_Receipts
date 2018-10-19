@@ -401,8 +401,8 @@ class TestReceiptservice(BaseTestCase):
         date_text = "22-09-2018"
         date = datetime.strptime(date_text, '%d-%m-%Y').date()
 
-        add_receipt(15, date, "GitHub", 20.0, 50.0)
-        add_receipt(16, date, "Gitlab", 15.0, 20.0)
+        add_receipt(15, date, "GitHub", "00.000.000/0000-00", 20.0, 50.0)
+        add_receipt(16, date, "Gitlab","00.000.000/0000-00", 15.0, 20.0)
 
 
         with self.client:
@@ -444,8 +444,8 @@ class TestReceiptservice(BaseTestCase):
         date_text = "22-09-2018"
         date = datetime.strptime(date_text, '%d-%m-%Y').date()
 
-        add_receipt(15, date, "GitHub", 20.0, 50.0)
-        add_receipt(16, date, "Gitlab", 15.0, 20.0)
+        add_receipt(15, date, "GitHub","00.000.000/0000-00", 20.0, 50.0)
+        add_receipt(16, date, "Gitlab","00.000.000/0000-00", 15.0, 20.0)
 
         with self.client:
 
@@ -472,8 +472,8 @@ class TestReceiptservice(BaseTestCase):
         date_text = "22-09-2018"
         date = datetime.strptime(date_text, '%d-%m-%Y').date()
 
-        add_receipt(15, date, "GitHub", 20.0, 50.0)
-        add_receipt(16, date, "Gitlab", 15.0, 20.0)
+        add_receipt(15, date, "GitHub","00.000.000/0000-00", 20.0, 50.0)
+        add_receipt(16, date, "Gitlab","00.000.000/0000-00", 15.0, 20.0)
 
 
         with self.client:
@@ -512,8 +512,8 @@ class TestReceiptservice(BaseTestCase):
         date_text = "22-09-2018"
         date = datetime.strptime(date_text, '%d-%m-%Y').date()
 
-        add_receipt(15, date, "GitHub", 20.0, 50.0)
-        add_receipt(16, date, "Gitlab", 15.0, 20.0)
+        add_receipt(15, date, "GitHub","00.000.000/0000-00", 20.0, 50.0)
+        add_receipt(16, date, "Gitlab","00.000.000/0000-00", 15.0, 20.0)
 
 
         with self.client:

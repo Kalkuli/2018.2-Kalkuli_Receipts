@@ -100,9 +100,6 @@ def filter_date():
         'message': 'wrong json'
     }
 
-    #if not post_data_date:
-        #return jsonify(error_response), 400
-
     date = post_data_date.get('period')
 
     date_from = date.get('date_from')
