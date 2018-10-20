@@ -13,18 +13,18 @@ class Receipt(db.Model):
     cnpj           = db.Column(db.String,      nullable=False)
     tax_value      = db.Column(db.Float,       nullable=False)
     total_price    = db.Column(db.Float,       nullable=False)
-    name           = db.Column(db.String,      nullable=False)
+    title           = db.Column(db.String,      nullable=False)
     description    = db.Column(db.Text,        nullable=False)
 
 
-    def __init__(self, company_id, emission_date, emission_place, cnpj, tax_value, total_price, name, description):
+    def __init__(self, company_id, emission_date, emission_place, cnpj, tax_value, total_price, title, description):
         self.company_id     = company_id 
         self.emission_date  = emission_date 
         self.emission_place = emission_place
         self.cnpj           = cnpj
         self.tax_value      = tax_value 
         self.total_price    = total_price
-        self.name           = name
+        self.title           = title
         self.description    = description
 
     def to_json(self):
@@ -36,7 +36,7 @@ class Receipt(db.Model):
             'cnpj': self.cnpj,
             'tax_value': self.tax_value,
             'total_price': self.total_price,
-            'name': self.name,
+            'title': self.title,
             'description': self.description
         }
 

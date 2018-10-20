@@ -41,7 +41,7 @@ def add_receipt():
     cnpj = receipt.get('cnpj')
     tax_value = receipt.get('tax_value')
     total_price = receipt.get('total_price')
-    name = receipt.get('name')
+    title = receipt.get('title')
     description = receipt.get('description')
 
     products = receipt.get('products')
@@ -50,7 +50,7 @@ def add_receipt():
         return jsonify(error_response), 400
 
     try:
-        receipt = Receipt(company_id, emission_date, emission_place, cnpj, tax_value, total_price, name, description)
+        receipt = Receipt(company_id, emission_date, emission_place, cnpj, tax_value, total_price, title, description)
         db.session.add(receipt)
         db.session.flush()
 
