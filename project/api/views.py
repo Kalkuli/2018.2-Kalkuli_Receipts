@@ -67,6 +67,7 @@ def add_receipt():
             }
         }
         return jsonify(response), 201
+        
     except exc.IntegrityError:
         db.session.rollback()
         return jsonify(error_response), 400

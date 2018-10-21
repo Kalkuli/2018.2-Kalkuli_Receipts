@@ -458,9 +458,8 @@ class TestReceiptservice(BaseTestCase):
         date_text = "22-09-2018"
         date = datetime.strptime(date_text, '%d-%m-%Y').date()
 
-        add_receipt(15, date, "GitHub", "00.000.000/0000-00", 20.0, 50.0)
-        add_receipt(16, date, "Gitlab","00.000.000/0000-00", 15.0, 20.0)
-
+        add_receipt(15, date, "GitHub", "00.000.000/0000-00", 20.0, 50.0, "Geladeira", "Isso é uma descrição bem grande")
+        add_receipt(16, date, "Gitlab", "00.000.000/0000-00", 15.0, 20.0, "Notebook", "Isso é outro description")
 
         with self.client:
 
@@ -482,14 +481,20 @@ class TestReceiptservice(BaseTestCase):
             self.assertEqual(15, data['receipts'][0]['company_id'])
             self.assertEqual(date.isoformat(), data['receipts'][0]['emission_date'])
             self.assertIn('GitHub', data['receipts'][0]['emission_place'])
+            self.assertIn('00.000.000/0000-00', data['receipts'][0]['cnpj'])
             self.assertEqual(20.0, data['receipts'][0]['tax_value'])
             self.assertEqual(50.0, data['receipts'][0]['total_price'])
+            self.assertIn('Geladeira', data['receipts'][0]['title'])
+            self.assertIn('Isso é uma descrição bem grande', data['receipts'][0]['description'])
 
             self.assertEqual(16, data['receipts'][1]['company_id'])
             self.assertEqual(date.isoformat(), data['receipts'][1]['emission_date'])
             self.assertIn('Gitlab', data['receipts'][1]['emission_place'])
+            self.assertIn('00.000.000/0000-00', data['receipts'][1]['cnpj'])
             self.assertEqual(15.0, data['receipts'][1]['tax_value'])
             self.assertEqual(20.0, data['receipts'][1]['total_price'])
+            self.assertIn('Notebook', data['receipts'][1]['title'])
+            self.assertIn('Isso é outro description', data['receipts'][1]['description'])
             
 
     def test_filter_date_no_receipts(self):
@@ -501,8 +506,8 @@ class TestReceiptservice(BaseTestCase):
         date_text = "22-09-2018"
         date = datetime.strptime(date_text, '%d-%m-%Y').date()
 
-        add_receipt(15, date, "GitHub","00.000.000/0000-00", 20.0, 50.0)
-        add_receipt(16, date, "Gitlab","00.000.000/0000-00", 15.0, 20.0)
+        add_receipt(15, date, "GitHub", "00.000.000/0000-00", 20.0, 50.0, "Geladeira", "Isso é uma descrição bem grande")
+        add_receipt(16, date, "Gitlab", "00.000.000/0000-00", 15.0, 20.0, "Notebook", "Isso é outro description")
 
         with self.client:
 
@@ -529,8 +534,8 @@ class TestReceiptservice(BaseTestCase):
         date_text = "22-09-2018"
         date = datetime.strptime(date_text, '%d-%m-%Y').date()
 
-        add_receipt(15, date, "GitHub","00.000.000/0000-00", 20.0, 50.0)
-        add_receipt(16, date, "Gitlab","00.000.000/0000-00", 15.0, 20.0)
+        add_receipt(15, date, "GitHub", "00.000.000/0000-00", 20.0, 50.0, "Geladeira", "Isso é uma descrição bem grande")
+        add_receipt(16, date, "Gitlab", "00.000.000/0000-00", 15.0, 20.0, "Notebook", "Isso é outro description")
 
 
         with self.client:
@@ -552,14 +557,20 @@ class TestReceiptservice(BaseTestCase):
             self.assertEqual(15, data['receipts'][0]['company_id'])
             self.assertEqual(date.isoformat(), data['receipts'][0]['emission_date'])
             self.assertIn('GitHub', data['receipts'][0]['emission_place'])
+            self.assertIn('00.000.000/0000-00', data['receipts'][0]['cnpj'])
             self.assertEqual(20.0, data['receipts'][0]['tax_value'])
             self.assertEqual(50.0, data['receipts'][0]['total_price'])
+            self.assertIn('Geladeira', data['receipts'][0]['title'])
+            self.assertIn('Isso é uma descrição bem grande', data['receipts'][0]['description'])
 
             self.assertEqual(16, data['receipts'][1]['company_id'])
             self.assertEqual(date.isoformat(), data['receipts'][1]['emission_date'])
             self.assertIn('Gitlab', data['receipts'][1]['emission_place'])
+            self.assertIn('00.000.000/0000-00', data['receipts'][1]['cnpj'])
             self.assertEqual(15.0, data['receipts'][1]['tax_value'])
             self.assertEqual(20.0, data['receipts'][1]['total_price'])
+            self.assertIn('Notebook', data['receipts'][1]['title'])
+            self.assertIn('Isso é outro description', data['receipts'][1]['description'])
 
 
     def test_filter_date_missing_date_to(self):
@@ -569,8 +580,8 @@ class TestReceiptservice(BaseTestCase):
         date_text = "22-09-2018"
         date = datetime.strptime(date_text, '%d-%m-%Y').date()
 
-        add_receipt(15, date, "GitHub","00.000.000/0000-00", 20.0, 50.0)
-        add_receipt(16, date, "Gitlab","00.000.000/0000-00", 15.0, 20.0)
+        add_receipt(15, date, "GitHub", "00.000.000/0000-00", 20.0, 50.0, "Geladeira", "Isso é uma descrição bem grande")
+        add_receipt(16, date, "Gitlab", "00.000.000/0000-00", 15.0, 20.0, "Notebook", "Isso é outro description")
 
 
         with self.client:
@@ -592,14 +603,20 @@ class TestReceiptservice(BaseTestCase):
             self.assertEqual(15, data['receipts'][0]['company_id'])
             self.assertEqual(date.isoformat(), data['receipts'][0]['emission_date'])
             self.assertIn('GitHub', data['receipts'][0]['emission_place'])
+            self.assertIn('00.000.000/0000-00', data['receipts'][0]['cnpj'])
             self.assertEqual(20.0, data['receipts'][0]['tax_value'])
             self.assertEqual(50.0, data['receipts'][0]['total_price'])
+            self.assertIn('Geladeira', data['receipts'][0]['title'])
+            self.assertIn('Isso é uma descrição bem grande', data['receipts'][0]['description'])
 
             self.assertEqual(16, data['receipts'][1]['company_id'])
             self.assertEqual(date.isoformat(), data['receipts'][1]['emission_date'])
             self.assertIn('Gitlab', data['receipts'][1]['emission_place'])
+            self.assertIn('00.000.000/0000-00', data['receipts'][1]['cnpj'])
             self.assertEqual(15.0, data['receipts'][1]['tax_value'])
             self.assertEqual(20.0, data['receipts'][1]['total_price'])
+            self.assertIn('Notebook', data['receipts'][1]['title'])
+            self.assertIn('Isso é outro description', data['receipts'][1]['description'])
 
     def test_remove_receipt(self):
         date_text = "22-09-2018"
