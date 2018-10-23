@@ -3,14 +3,21 @@ services:
   - docker
 env:
   DOCKER_COMPOSE_VERSION: 1.21.1
+   global:
+    - CC_TEST_REPORTER_ID
 before_install:
   - sudo rm /usr/local/bin/docker-compose
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
 before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
   - docker-compose -f docker-compose-dev.yml up --build -d
 script:
-  - docker-compose -f docker-compose-dev.yml run base python manage.py test
+#  - docker-compose -f docker-compose-dev.yml run base python manage.py test
+  - docker-compose -f docker-compose-dev.yml run base python manage.py cov  
 after_script:
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
   - docker-compose -f docker-compose-dev.yml down
