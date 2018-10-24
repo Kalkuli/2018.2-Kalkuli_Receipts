@@ -21,5 +21,5 @@ script:
   - docker-compose -f docker-compose-dev.yml run base python manage.py cov  
 
 after_script:
-  - ./cc-test-reporter after-build -t coverage.py --add-prefix . --debug --exit-code $TRAVIS_TEST_RESULT
+  - ./cc-test-reporter after-build -t coverage.py --exit-code $TRAVIS_TEST_RESULT
   - docker-compose -f docker-compose-dev.yml down
