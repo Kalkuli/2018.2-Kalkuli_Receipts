@@ -23,4 +23,3 @@ script:
 after_script:
   - ./cc-test-reporter after-build -t coverage.py --exit-code $TRAVIS_TEST_RESULT
   - docker-compose -f docker-compose-dev.yml down
-
