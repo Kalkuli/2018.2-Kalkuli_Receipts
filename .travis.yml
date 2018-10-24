@@ -3,8 +3,6 @@ services:
   - docker
 env:
   DOCKER_COMPOSE_VERSION: 1.21.1  
-  #global:
-   #   - CC_TEST_REPORTER_ID=774ba20c3e2a95aec4181b1f3c7001d935a7853fe31f75f6f2418194fccd626d
 
 before_install:
   - sudo rm /usr/local/bin/docker-compose
@@ -23,5 +21,5 @@ script:
   - docker-compose -f docker-compose-dev.yml run base python manage.py cov  
 
 after_script:
-  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+  - ./cc-test-reporter after-build -t coverage.py --add-prefix . --debug --exit-code $TRAVIS_TEST_RESULT
   - docker-compose -f docker-compose-dev.yml down
