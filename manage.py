@@ -47,7 +47,7 @@ def cov():
         print('Coverage Summary:')
         COV.report()
         COV.html_report()
-        COV.erase()
+        COV.xml_report()
         return 0
     return 1
 
