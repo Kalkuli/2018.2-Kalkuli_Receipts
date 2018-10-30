@@ -4,6 +4,7 @@ from flask import request, jsonify, Blueprint
 from sqlalchemy import exc
 from project.api.models import Receipt
 from project.api.models import Product
+from project.api.models import Tag
 
 from project import db
 
@@ -151,4 +152,15 @@ def delete_receipt(receipt_id):
     except ValueError:
         return jsonify(error_response), 404
 
+    return jsonify(response), 200
+
+
+@receipts_blueprint.route('/tags', methods=['GET'])
+def get_all_tags(): 
+    response = {
+        'status': 'success',
+        'data': {
+            'tags': [tag.to_json() for tag in Tag.query.all()]
+        }
+    }
     return jsonify(response), 200
