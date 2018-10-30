@@ -12,7 +12,7 @@ COV.start()
 
 from flask.cli import FlaskGroup
 from project import app, db
-from project.api.models import Receipt, Product
+from project.api.models import Receipt, Product, Tag
 import unittest
 
 cli = FlaskGroup(app)

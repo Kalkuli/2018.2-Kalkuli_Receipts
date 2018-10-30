@@ -16,7 +16,8 @@ class Receipt(db.Model):
     total_price    = db.Column(db.Float,       nullable=False)
     title          = db.Column(db.String,      nullable=False)
     description    = db.Column(db.Text,        nullable=False)
-
+    tag_id         = db.Column(db.Integer,  db.ForeignKey('tag.id'), nullable=False)
+    tags           = db.relationship('Tag', backref=db.backref('receipts', lazy=True))
 
     def __init__(self, company_id, emission_date, emission_place, cnpj, tax_value, total_price, title, description):
         self.company_id     = company_id 
@@ -26,7 +27,7 @@ class Receipt(db.Model):
         self.tax_value      = tax_value 
         self.total_price    = total_price
         self.title          = title
-        self.description    = description
+        self.description    = description 
 
     def to_json(self):
         return {
@@ -75,4 +76,4 @@ class Tag(db.Model):
         return {
             'id': self.id,
             'category': self.category
-        }
+        } 
