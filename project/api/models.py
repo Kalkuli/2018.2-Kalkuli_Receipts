@@ -14,7 +14,7 @@ class Receipt(db.Model):
     cnpj           = db.Column(db.String,      nullable=False)
     tax_value      = db.Column(db.Float,       nullable=False)
     total_price    = db.Column(db.Float,       nullable=False)
-    title           = db.Column(db.String,      nullable=False)
+    title          = db.Column(db.String,      nullable=False)
     description    = db.Column(db.Text,        nullable=False)
 
 
@@ -25,7 +25,7 @@ class Receipt(db.Model):
         self.cnpj           = cnpj
         self.tax_value      = tax_value 
         self.total_price    = total_price
-        self.title           = title
+        self.title          = title
         self.description    = description
 
     def to_json(self):
@@ -61,4 +61,18 @@ class Product(db.Model):
             'receipt_id':self.receipt_id,
             'quantity':self.quantity,
             'unit_price':self.unit_price
+        }
+
+class Tag(db.Model):
+    __tablename__ = 'tag'
+    id         = db.Column(db.Integer,  primary_key=True, autoincrement=True)
+    category   = db.Column(db.String(50), nullable=False)
+
+    def __init__(self, category):
+        self.category = category
+    
+    def to_json(self):
+        return {
+            'id': self.id,
+            'category': self.category
         }
