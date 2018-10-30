@@ -3,6 +3,7 @@ import unittest
 from datetime import datetime
 from project.tests.base import BaseTestCase
 from project.api.models import Receipt
+from project.api.models import Tag
 from project import db
 
 
@@ -12,6 +13,12 @@ def add_receipt(company_id, emission_date, emission_place, cnpj, tax_value, tota
     db.session.add(receipt)
     db.session.commit()
     return receipt
+
+def add_tag(category):
+    tag = Tag(category)
+    db.session.add(tag)
+    db.session.commit()
+    return tag
 
 
 class TestReceiptservice(BaseTestCase):
@@ -631,7 +638,23 @@ class TestReceiptservice(BaseTestCase):
             self.assertEqual(response.status_code, 200)
             self.assertIn('success', data['status'])
             self.assertIn('Receipt deleted', data['data']['message'])
-            
+
+    def test_get_tags(self):
+        add_tag('Alimentação')
+        add_tag('Eletrodoméstico')
+
+        with self.client:
+            response = self.client.get('/tags')
+            data = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(data['data']['tags']), 2)
+
+            self.assertIn('success', data['status'])
+
+            self.assertIn('Alimentação', data['data']['tags'][0]['category'])
+
+            self.assertIn('Eletrodoméstico', data['data']['tags'][1]['category'])
 
 if __name__ == '__main__':
     unittest.main()

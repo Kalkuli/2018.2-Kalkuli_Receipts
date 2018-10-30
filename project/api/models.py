@@ -16,8 +16,8 @@ class Receipt(db.Model):
     total_price    = db.Column(db.Float,       nullable=False)
     title          = db.Column(db.String,      nullable=False)
     description    = db.Column(db.Text,        nullable=False)
-    tag_id         = db.Column(db.Integer,  db.ForeignKey('tag.id'), nullable=False)
-    tags           = db.relationship('Tag', backref=db.backref('receipts', lazy=True))
+    #tag_id         = db.Column(db.Integer,  db.ForeignKey('tag.id'), nullable=False)
+    #tags           = db.relationship('Tag', backref=db.backref('receipts', lazy=True))
 
     def __init__(self, company_id, emission_date, emission_place, cnpj, tax_value, total_price, title, description):
         self.company_id     = company_id 
