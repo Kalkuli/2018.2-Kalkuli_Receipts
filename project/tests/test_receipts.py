@@ -655,6 +655,25 @@ class TestReceiptservice(BaseTestCase):
             self.assertIn('Alimentação', data['data']['tags'][0]['category'])
 
             self.assertIn('Eletrodoméstico', data['data']['tags'][1]['category'])
+    
+    def test_add_tag(self):
+        with self.client:
+
+            response = self.client.post(
+                '/tag',
+                data=json.dumps({
+                    'tag': {
+                        'category': 'Alimentação'
+                    }
+                }),
+                content_type='application/json'
+            )
+
+            data = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 201)
+            self.assertIn('Tag was created', data['data']['message'])
+            self.assertIn('success', data['status'])
 
 if __name__ == '__main__':
     unittest.main()
