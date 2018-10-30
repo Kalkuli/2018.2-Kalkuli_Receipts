@@ -164,3 +164,36 @@ def get_all_tags():
         }
     }
     return jsonify(response), 200
+
+@receipts_blueprint.route('/tag', methods=['POST'])
+def add_tag():
+    post_data = request.get_json()
+
+    error_response = {
+        'status': 'fail',
+        'message': 'wrong JSON'
+    }
+
+    if not post_data: 
+        return jsonify(error_response), 400
+
+    tag = post_data.get('tag')
+
+    category = tag.get('category')
+
+    try:
+        tag = Tag(category)
+        db.session.add(tag)
+        db.session.flush()
+        db.session.commit()
+
+        response = {
+            'status': 'success',
+            'data': {
+                'message': 'Tag was created'
+            }
+        }
+        return jsonify(response), 201
+    except exc.IntegrityError:
+        db.session.rollback()
+        return jsonify(error_response), 400
