@@ -197,3 +197,55 @@ def add_tag():
     except exc.IntegrityError:
         db.session.rollback()
         return jsonify(error_response), 400
+
+@receipts_blueprint.route('/attribute_tag', methods=['POST'])
+def attribute_tag_to_receipt():
+    post_data = request.get_json()
+
+    error_response = {
+        'status': 'fail',
+        'message': 'wrong JSON'
+    }
+
+    if not post_data: 
+        return jsonify(error_response), 400
+    
+    receipt = post_data.get('receipt')
+
+    company_id = receipt.get('company_id')
+    emission_date = receipt.get('emission_date')
+    emission_place = receipt.get('emission_place')
+    cnpj = receipt.get('cnpj')
+    tax_value = receipt.get('tax_value')
+    total_price = receipt.get('total_price')
+    title = receipt.get('title')
+    description = receipt.get('description')
+    tag_id = receipt.get('tag_id')
+
+    products = receipt.get('products')    
+    
+    if products is None:
+        return jsonify(error_response), 400
+
+    try:
+        receipt = Receipt(company_id, emission_date, emission_place, cnpj, tax_value, total_price, title, description, tag_id)
+        db.session.add(receipt)
+        db.session.flush()
+
+        for product in products:
+            db.session.add(Product(receipt.id, product.get(
+                'quantity'), product.get('unit_price')))
+
+        db.session.commit()
+
+        response = {
+            'status': 'success',
+            'data': {
+                'message': 'A tag was attributed to a Receipt!'
+            }
+        }
+
+        return jsonify(response), 201
+    except exc.IntegrityError:
+        db.session.rollback()
+        return jsonify(error_response), 400
