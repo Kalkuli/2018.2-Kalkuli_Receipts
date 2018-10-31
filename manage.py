@@ -25,6 +25,14 @@ def recreatedb():
     db.create_all()
     db.session.commit()
 
+# Create Tags in db
+@cli.command()
+def seedtagdb():
+    db.session.add(Tag(category='Transporte'))
+    db.session.add(Tag(category='Alimentação'))
+    db.session.add(Tag(category='Eletrônicos'))
+    db.session.add(Tag(category='Limpeza'))
+    db.session.commit()
 
 # Registers comand to run tests
 @cli.command()
