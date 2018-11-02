@@ -28,14 +28,10 @@ def recreatedb():
 # Create Tags in db
 @cli.command()
 def seedtagdb():
-    db.session.add(Tag(category='Transporte'))
-    db.session.add(Tag(color='#79B473'))
-    db.session.add(Tag(category='Alimentação'))
-    db.session.add(Tag(color='#DB5461'))
-    db.session.add(Tag(category='Eletrônicos'))
-    db.session.add(Tag(color='#593C8F'))
-    db.session.add(Tag(category='Limpeza'))
-    db.session.add(Tag(color='#5CC8FF'))
+    db.session.add(Tag(category='Transporte', color='#79B473'))
+    db.session.add(Tag(category='Alimentação', color='#DB5461'))
+    db.session.add(Tag(category='Eletrônicos', color='#593C8F'))
+    db.session.add(Tag(category='Limpeza', color='#5CC8FF'))
     db.session.commit()
 
 # Registers comand to run tests

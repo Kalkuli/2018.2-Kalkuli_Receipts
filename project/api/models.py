@@ -70,12 +70,15 @@ class Tag(db.Model):
     __tablename__ = 'tag'
     id         = db.Column(db.Integer,  primary_key=True, autoincrement=True)
     category   = db.Column(db.String(50), nullable=False)
+    color      = db.Column(db.String(50), nullable=True)
 
-    def __init__(self, category):
+    def __init__(self, category, color):
         self.category = category
+        self.color = color
     
     def to_json(self):
         return {
             'id': self.id,
-            'category': self.category
+            'category': self.category,
+            'color': self.color
         } 
