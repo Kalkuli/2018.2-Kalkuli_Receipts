@@ -4,6 +4,7 @@ from flask import request, jsonify, Blueprint
 from sqlalchemy import exc
 from project.api.models import Receipt
 from project.api.models import Product
+from project.api.models import Tag
 
 from project import db
 
@@ -43,6 +44,7 @@ def add_receipt():
     total_price = receipt.get('total_price')
     title = receipt.get('title')
     description = receipt.get('description')
+    tag_id = receipt.get('tag_id')
 
     products = receipt.get('products')
 
@@ -50,7 +52,7 @@ def add_receipt():
         return jsonify(error_response), 400
 
     try:
-        receipt = Receipt(company_id, emission_date, emission_place, cnpj, tax_value, total_price, title, description)
+        receipt = Receipt(company_id, emission_date, emission_place, cnpj, tax_value, total_price, title, description, tag_id)
         db.session.add(receipt)
         db.session.flush()
 
@@ -151,4 +153,42 @@ def delete_receipt(receipt_id):
     except ValueError:
         return jsonify(error_response), 404
 
+    return jsonify(response), 200
+
+
+@receipts_blueprint.route('/tags', methods=['GET'])
+def get_all_tags(): 
+    response = {
+        'status': 'success',
+        'data': {
+            'tags': [tag.to_json() for tag in Tag.query.all()]
+        }
+    }
+    return jsonify(response), 200
+
+@receipts_blueprint.route('/update_tag/<receipt_id>', methods=['PATCH'])
+def update_tag(receipt_id):
+    post_data = request.get_json()
+
+    tag_id = post_data.get('tag_id')
+
+    receipt = Receipt.query.filter_by(id=int(receipt_id)).first()
+    receipt.tag_id = tag_id
+    db.session.commit()
+
+    if receipt.tag_id is None:
+        response = {
+            'status': 'success',
+            'data': {
+                'message': 'Tag detached from a receipt!'
+            }
+        }
+    else:
+        response = {
+            'status': 'success',
+            'data': {
+                'message': 'Tag updated!'
+            }
+        }
+    
     return jsonify(response), 200

@@ -14,19 +14,21 @@ class Receipt(db.Model):
     cnpj           = db.Column(db.String,      nullable=False)
     tax_value      = db.Column(db.Float,       nullable=False)
     total_price    = db.Column(db.Float,       nullable=False)
-    title           = db.Column(db.String,      nullable=False)
+    title          = db.Column(db.String,      nullable=False)
     description    = db.Column(db.Text,        nullable=False)
+    tag_id         = db.Column(db.Integer, db.ForeignKey('tag.id'), nullable=True)
+    tags           = db.relationship('Tag', backref=db.backref('receipts', lazy=True))
 
-
-    def __init__(self, company_id, emission_date, emission_place, cnpj, tax_value, total_price, title, description):
+    def __init__(self, company_id, emission_date, emission_place, cnpj, tax_value, total_price, title, description, tag_id):
         self.company_id     = company_id 
         self.emission_date  = emission_date 
         self.emission_place = emission_place
         self.cnpj           = cnpj
         self.tax_value      = tax_value 
         self.total_price    = total_price
-        self.title           = title
+        self.title          = title
         self.description    = description
+        self.tag_id         = tag_id 
 
     def to_json(self):
         return {
@@ -38,7 +40,8 @@ class Receipt(db.Model):
             'tax_value': self.tax_value,
             'total_price': self.total_price,
             'title': self.title,
-            'description': self.description
+            'description': self.description,
+            'tag_id': self.tag_id
         }
 
 
@@ -62,3 +65,20 @@ class Product(db.Model):
             'quantity':self.quantity,
             'unit_price':self.unit_price
         }
+
+class Tag(db.Model):
+    __tablename__ = 'tag'
+    id         = db.Column(db.Integer,  primary_key=True, autoincrement=True)
+    category   = db.Column(db.String(50), nullable=False)
+    color      = db.Column(db.String(50), nullable=True)
+
+    def __init__(self, category, color):
+        self.category = category
+        self.color = color
+    
+    def to_json(self):
+        return {
+            'id': self.id,
+            'category': self.category,
+            'color': self.color
+        } 
