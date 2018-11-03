@@ -5,20 +5,7 @@ from project.tests.base import BaseTestCase
 from project.api.models import Receipt
 from project.api.models import Tag
 from project import db
-
-
-
-def add_receipt(company_id, emission_date, emission_place, cnpj, tax_value, total_price, title, description, tag_id):
-    receipt = Receipt(company_id, emission_date, emission_place, cnpj, tax_value, total_price, title, description, tag_id)
-    db.session.add(receipt)
-    db.session.commit()
-    return receipt
-
-def add_tag(category):
-    tag = Tag(category)
-    db.session.add(tag)
-    db.session.commit()
-    return tag
+from project.tests.utils import add_receipt, add_tag
 
 
 class TestReceiptservice(BaseTestCase):
@@ -660,8 +647,8 @@ class TestReceiptservice(BaseTestCase):
             self.assertIn('Receipt deleted', data['data']['message'])
 
     def test_get_tags(self):
-        add_tag('Alimentação')
-        add_tag('Eletrodoméstico')
+        add_tag('Alimentação', "#874845")
+        add_tag('Eletrodoméstico', '#844155')
 
         with self.client:
             response = self.client.get('/tags')
@@ -673,8 +660,10 @@ class TestReceiptservice(BaseTestCase):
             self.assertIn('success', data['status'])
 
             self.assertIn('Alimentação', data['data']['tags'][0]['category'])
+            self.assertIn('#874845', data['data']['tags'][0]['color'])
 
             self.assertIn('Eletrodoméstico', data['data']['tags'][1]['category'])
+            self.assertIn('#844155', data['data']['tags'][1]['color'])
 
     def test_update_tag(self):
         date_text = "22-09-2018"
@@ -682,7 +671,7 @@ class TestReceiptservice(BaseTestCase):
 
         receipt = add_receipt(15, date, "GitHub", "00.000.000/0000-00", 20.0, 50.0, "Geladeira", "Isso é uma descrição bem grande", None)
 
-        add_tag('Alimentação')
+        add_tag('Alimentação', '#844155')
 
         with self.client:
             response = self.client.patch(
