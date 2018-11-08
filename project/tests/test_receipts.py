@@ -747,7 +747,7 @@ class TestReceiptservice(BaseTestCase):
         add_tag('Utilitários', 'black')
         with self.client:
             response = self.client.post(
-                'create_tag',
+                '/create_tag',
                 data=json.dumps({
                     "tag": {
                         "color": "black",
@@ -759,33 +759,16 @@ class TestReceiptservice(BaseTestCase):
 
             data = json.loads(response.data.decode())
 
-            self.assertEqual(response.status_code, 400)
-            self.assertIn('tag alredy exists', data['message'])
-            self.assertIn('fail', data['status'])
-
-    def test_missing_tag_create_tag(self):
-        with self.client:
-            response = self.client.post(
-                'create_tag',
-                data=json.dumps({
-                    "tag": {}
-                }),
-                content_type='application/json',
-            )
-
-            data = json.loads(response.data.decode())
-
-            self.assertEqual(response.status_code, 400)
-            self.assertIn('wrong json', data['message'])
+            self.assertEqual(response.status_code, 409)
+            self.assertIn('Tag já existente!', data['message'])
             self.assertIn('fail', data['status'])
 
     def test_missing_category_create_tag(self):
         with self.client:
             response = self.client.post(
-                'create_tag',
+                '/create_tag',
                 data=json.dumps({
                     "tag": {
-                        "category": "",
                         "color": "yellow"
                     }
                 }),
@@ -797,26 +780,6 @@ class TestReceiptservice(BaseTestCase):
             self.assertEqual(response.status_code, 400)
             self.assertIn('wrong json', data['message'])
             self.assertIn('fail', data['status'])
-
-    def test_missing_color_create_tag(self):
-        with self.client:
-            response = self.client.post(
-                'create_tag',
-                data=json.dumps({
-                    "tag": {
-                        "category": "Utilitarios",
-                        "color": ""
-                    }
-                }),
-                content_type='application/json',
-            )
-
-            data = json.loads(response.data.decode())
-
-            self.assertEqual(response.status_code, 400)
-            self.assertIn('wrong json', data['message'])
-            self.assertIn('fail', data['status'])
-
 
 
 if __name__ == '__main__':
