@@ -210,6 +210,13 @@ def create_tag():
     category = tag.get('category')
     color = tag.get('color')
 
+    check_tag = []
+    for check_tag in Tag.query.all():
+        if category == check_tag.to_json().get('category'):
+            return jsonify({
+                'status': 'fail',
+                'message': 'tag alredy exists'
+            }), 400
 
     try:
         tag = Tag(category, color)
