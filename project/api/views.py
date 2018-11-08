@@ -207,8 +207,18 @@ def create_tag():
 
     tag = post_data.get('tag')
 
+    if not tag:
+        return jsonify(error_response), 400
+
     category = tag.get('category')
     color = tag.get('color')
+
+    if not color:
+        return jsonify(error_response), 400
+
+    if not category:
+        return jsonify(error_response), 400
+
 
     check_tag = []
     for check_tag in Tag.query.all():
