@@ -226,7 +226,7 @@ def create_tag():
             return jsonify({
                 'status': 'fail',
                 'message': 'tag alredy exists'
-            }), 400
+            }), 402
 
     try:
         tag = Tag(category, color)
