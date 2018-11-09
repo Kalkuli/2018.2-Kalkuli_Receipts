@@ -778,7 +778,25 @@ class TestReceiptservice(BaseTestCase):
             data = json.loads(response.data.decode())
 
             self.assertEqual(response.status_code, 400)
-            self.assertIn('wrong json', data['message'])
+            self.assertIn('Não é possível adicionar uma categoria sem nome', data['message'])
+            self.assertIn('fail', data['status'])
+
+    def test_missing_color_create_tag(self):
+        with self.client:
+            response = self.client.post(
+                '/create_tag',
+                data=json.dumps({
+                    "tag": {
+                        "category": "Pipoca"
+                    }
+                }),
+                content_type='application/json',
+            )
+
+            data = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 400)
+            self.assertIn('Não é possível adicionar uma categoria sem cor', data['message'])
             self.assertIn('fail', data['status'])
 
 
