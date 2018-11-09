@@ -10,9 +10,15 @@
  </div> 
 
 
-## Deploy    
+## Ambientes
 
-A ultima versão do app pode ser encontrada em: https://kalkuli-receipts.herokuapp.com
+### Produção
+Para acessar o ambiente de produção utilize o link abaixo: 
+```https://kalkuli-receipts.herokuapp.com/```
+
+### Homologação
+Para acessar o ambiente de homologação clique no link abaixo:
+```https://kalkuli-receipts-hom.herokuapp.com/```
 
 ***   
 
