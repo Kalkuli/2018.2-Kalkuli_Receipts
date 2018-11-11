@@ -708,7 +708,97 @@ class TestReceiptservice(BaseTestCase):
             self.assertEqual(response.status_code, 200)
             self.assertIn('Tag detached from a receipt!', data['data']['message'])
             self.assertIn('success', data['status'])
-    
+
+    def test_create_tag(self):
+        with self.client:
+            response = self.client.post(
+                '/create_tag',
+                data=json.dumps({
+                    "tag": {
+                        "color": "black",
+                        "category": "Utilitários"
+                    }
+                }),
+                content_type='application/json',
+            )
+
+            data = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 201)
+            self.assertIn('Tag was created!', data['data']['message'])
+            self.assertIn('success', data['status'])
+
+    def test_fail_create_tag(self):
+        with self.client:
+            response = self.client.post(
+                '/create_tag',
+                data=json.dumps({}),
+                content_type='application/json',
+            )
+
+            data = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 400)
+            self.assertIn('wrong json', data['message'])
+            self.assertIn('fail', data['status'])
+
+    def test_category_was_exist_create_tag(self):
+
+        add_tag('Utilitários', 'black')
+        with self.client:
+            response = self.client.post(
+                '/create_tag',
+                data=json.dumps({
+                    "tag": {
+                        "color": "black",
+                        "category": "Utilitários"
+                    }
+                }),
+                content_type='application/json',
+            )
+
+            data = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 409)
+            self.assertIn('Tag já existente!', data['message'])
+            self.assertIn('fail', data['status'])
+
+    def test_missing_category_create_tag(self):
+        with self.client:
+            response = self.client.post(
+                '/create_tag',
+                data=json.dumps({
+                    "tag": {
+                        "color": "yellow"
+                    }
+                }),
+                content_type='application/json',
+            )
+
+            data = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 400)
+            self.assertIn('Não é possível adicionar uma categoria sem nome', data['message'])
+            self.assertIn('fail', data['status'])
+
+    def test_missing_color_create_tag(self):
+        with self.client:
+            response = self.client.post(
+                '/create_tag',
+                data=json.dumps({
+                    "tag": {
+                        "category": "Pipoca"
+                    }
+                }),
+                content_type='application/json',
+            )
+
+            data = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 400)
+            self.assertIn('Não é possível adicionar uma categoria sem cor', data['message'])
+            self.assertIn('fail', data['status'])
+
 
 if __name__ == '__main__':
     unittest.main()

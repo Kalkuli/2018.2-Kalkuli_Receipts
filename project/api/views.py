@@ -192,3 +192,63 @@ def update_tag(receipt_id):
         }
     
     return jsonify(response), 200
+
+@receipts_blueprint.route('/create_tag', methods=['POST'])
+def create_tag():
+    post_data = request.get_json()
+
+    error_response = {
+        'status': 'fail',
+        'message': 'wrong json'
+    }
+
+    error_response_missing_category = {
+        'status': 'fail',
+        'message': 'Não é possível adicionar uma categoria sem nome'
+    }
+
+    error_response_missing_color = {
+        'status': 'fail',
+        'message': 'Não é possível adicionar uma categoria sem cor'
+    }
+
+    if not post_data:
+        return jsonify(error_response), 400
+
+    tag = post_data.get('tag')
+
+    category = tag.get('category')
+
+    if not category:
+        return jsonify(error_response_missing_category), 400
+
+    color = tag.get('color')
+
+    if not color:
+        return jsonify(error_response_missing_color), 400
+
+    check_tag = []
+    for check_tag in Tag.query.all():
+        if category == check_tag.to_json().get('category'):
+            return jsonify({
+                'status': 'fail',
+                'message': 'Tag já existente!'
+            }), 409
+
+    try:
+        tag = Tag(category, color)
+        db.session.add(tag)
+        db.session.commit()
+
+        response = {
+            'status': 'success',
+            'data': {
+                'message': 'Tag was created!'
+            }
+        }
+
+        return jsonify(response), 201
+
+    except exc.IntegrityError:
+        db.session.rollback()
+        return jsonify(error_response), 400
