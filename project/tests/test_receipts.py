@@ -414,7 +414,7 @@ class TestReceiptservice(BaseTestCase):
         receipt = add_receipt(15, date, "GitHub", "00.000.000/0000-00", 20.0, 50.0, 'Geladeira', 'Geladeira Electrolux em 12x', None)
 
         with self.client:
-            response = self.client.get(f'/receipt/{receipt.id}')
+            response = self.client.get(f'/15/receipt/{receipt.id}')
             data = json.loads(response.data.decode())
 
             self.assertEqual(response.status_code, 200)
@@ -432,7 +432,7 @@ class TestReceiptservice(BaseTestCase):
 
     def test_get_single_receipt_no_id(self):
         with self.client:
-            response = self.client.get('/receipt/noid')
+            response = self.client.get('/2/receipt/noid')
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 404)
             self.assertIn('fail', data['status'])
@@ -440,7 +440,23 @@ class TestReceiptservice(BaseTestCase):
 
     def test_get_single_receipt_inexistent_id(self):
         with self.client:
-            response = self.client.get('/receipt/100000')
+            response = self.client.get('/1/receipt/100000')
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 404)
+            self.assertIn('fail', data['status'])
+            self.assertIn('Receipt not found', data['message'])
+    
+    def test_get_single_receipt_no_companyid(self):
+        with self.client:
+            response = self.client.get('/noid/receipt/2')
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 404)
+            self.assertIn('fail', data['status'])
+            self.assertIn('Receipt not found', data['message'])
+
+    def test_get_single_receipt_inexistent_id(self):
+        with self.client:
+            response = self.client.get('/1000000000/receipt/1')
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 404)
             self.assertIn('fail', data['status'])

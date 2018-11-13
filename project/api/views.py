@@ -76,14 +76,14 @@ def add_receipt():
 
 
 
-@receipts_blueprint.route('/receipt/<receipt_id>', methods=['GET'])
-def get_single_receipt(receipt_id):
+@receipts_blueprint.route('/<company_id>/receipt/<receipt_id>', methods=['GET'])
+def get_single_receipt(company_id, receipt_id):
     error_response = {
         'status': 'fail',
         'message': 'Receipt not found'
     }
     try:
-        receipt = Receipt.query.filter_by(id=int(receipt_id)).first()
+        receipt = Receipt.query.filter_by(id=int(receipt_id), company_id=int(company_id)).first()
 
         if not receipt:
             return jsonify(error_response), 404
