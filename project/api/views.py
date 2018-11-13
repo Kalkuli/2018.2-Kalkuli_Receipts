@@ -11,12 +11,12 @@ from project import db
 receipts_blueprint = Blueprint('receipt', __name__)
 
 
-@receipts_blueprint.route('/receipts', methods=['GET'])
-def get_all_receipts():
+@receipts_blueprint.route('/<company_id>/receipts', methods=['GET'])
+def get_all_receipts(company_id):
     response = {
         'status': 'success',
         'data': {
-            'receipts': [receipt.to_json() for receipt in Receipt.query.all()]
+            'receipts': [receipt.to_json() for receipt in Receipt.query.filter_by(company_id=int(company_id))]
         }
     }
     return jsonify(response), 200

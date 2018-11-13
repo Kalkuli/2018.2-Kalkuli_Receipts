@@ -17,11 +17,11 @@ class TestReceiptservice(BaseTestCase):
         add_receipt(16, date, "Gitlab", "00.000.000/0000-00", 15.0, 20.0, "Notebook", "Isso é outro description", None)
 
         with self.client:
-            response = self.client.get('/receipts')
+            response = self.client.get('/15/receipts')
             data = json.loads(response.data.decode())
 
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(len(data['data']['receipts']), 2)
+            self.assertEqual(len(data['data']['receipts']), 1)
 
             self.assertIn('success', data['status'])
 
@@ -34,16 +34,6 @@ class TestReceiptservice(BaseTestCase):
             self.assertIn('Geladeira', data['data']['receipts'][0]['title'])
             self.assertIn('Isso é uma descrição bem grande', data['data']['receipts'][0]['description'])
             self.assertEqual(None, data['data']['receipts'][0]['tag_id'])
-
-            self.assertEqual(16, data['data']['receipts'][1]['company_id'])
-            self.assertEqual(date.isoformat(), data['data']['receipts'][1]['emission_date'])
-            self.assertIn('Gitlab', data['data']['receipts'][1]['emission_place'])
-            self.assertIn('00.000.000/0000-00', data['data']['receipts'][1]['cnpj'])
-            self.assertEqual(15.0, data['data']['receipts'][1]['tax_value'])
-            self.assertEqual(20.0, data['data']['receipts'][1]['total_price'])
-            self.assertIn('Notebook', data['data']['receipts'][1]['title'])
-            self.assertIn('Isso é outro description', data['data']['receipts'][1]['description'])
-            self.assertEqual(None, data['data']['receipts'][1]['tag_id'])
 
     def test_add_receipt(self):
 
