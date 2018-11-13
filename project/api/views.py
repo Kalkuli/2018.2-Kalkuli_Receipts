@@ -97,8 +97,8 @@ def get_single_receipt(company_id, receipt_id):
 
     return jsonify(response), 200
 
-@receipts_blueprint.route('/select_date', methods=['POST'])
-def filter_date():
+@receipts_blueprint.route('/<company_id>/select_date', methods=['POST'])
+def filter_date(company_id):
     post_data_date = request.get_json()
 
     error_response = {
@@ -122,7 +122,7 @@ def filter_date():
 
     
     response = {
-        'receipts': [receipt.to_json() for receipt in Receipt.query.filter(Receipt.emission_date <= end).filter(Receipt.emission_date >= start)]
+        'receipts': [receipt.to_json() for receipt in Receipt.query.filter(Receipt.emission_date <= end).filter(Receipt.emission_date >= start).filter(Receipt.company_id == int(company_id))]
     }
 
     if not response.get('receipts'):
