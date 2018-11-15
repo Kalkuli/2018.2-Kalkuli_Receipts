@@ -684,7 +684,7 @@ class TestReceiptservice(BaseTestCase):
 
         with self.client:
             response = self.client.patch(
-                f'/update_tag/{receipt.id}',
+                f'/15/update_tag/{receipt.id}',
                 data = json.dumps({
                     'tag_id': 1
                 }),
@@ -697,6 +697,29 @@ class TestReceiptservice(BaseTestCase):
             self.assertIn('Tag updated!', data['data']['message'])
             self.assertIn('success', data['status'])
 
+    def test_update_tag_not_found(self):
+        date_text = "22-09-2018"
+        date = datetime.strptime(date_text, '%d-%m-%Y').date()
+
+        receipt = add_receipt(16, date, "GitHub", "00.000.000/0000-00", 20.0, 50.0, "Geladeira", "Isso é uma descrição bem grande", None)
+
+        add_tag('Alimentação', '#844155')
+
+        with self.client:
+            response = self.client.patch(
+                f'/15/update_tag/{receipt.id}',
+                data = json.dumps({
+                    'tag_id': 1
+                }),
+                content_type='application/json'
+            )
+
+            data = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 404)
+            self.assertIn('Receipt not found', data['message'])
+            self.assertIn('fail', data['status'])
+
     def test_detach_tag(self):
         date_text = "22-09-2018"
         date = datetime.strptime(date_text, '%d-%m-%Y').date()
@@ -705,7 +728,7 @@ class TestReceiptservice(BaseTestCase):
 
         with self.client:
             response = self.client.patch(
-                f'/update_tag/{receipt.id}',
+                f'/15/update_tag/{receipt.id}',
                 data = json.dumps({
                     'tag_id': None
                 }),

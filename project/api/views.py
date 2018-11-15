@@ -167,13 +167,21 @@ def get_all_tags():
     }
     return jsonify(response), 200
 
-@receipts_blueprint.route('/update_tag/<receipt_id>', methods=['PATCH'])
-def update_tag(receipt_id):
+@receipts_blueprint.route('/<company_id>/update_tag/<receipt_id>', methods=['PATCH'])
+def update_tag(company_id, receipt_id):
     post_data = request.get_json()
 
     tag_id = post_data.get('tag_id')
 
-    receipt = Receipt.query.filter_by(id=int(receipt_id)).first()
+    receipt = Receipt.query.filter_by(id=int(receipt_id), company_id=int(company_id)).first()
+    if not receipt:
+        error_response = {
+            'status': 'fail',
+            'message': 'Receipt not found'
+        }
+        return jsonify(error_response), 404
+
+
     receipt.tag_id = tag_id
     db.session.commit()
 
