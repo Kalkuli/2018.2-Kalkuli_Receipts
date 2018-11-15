@@ -879,5 +879,32 @@ class TestReceiptservice(BaseTestCase):
             self.assertIn('Wrong JSON', data['message'])
             self.assertIn('fail', data['status'])
 
+    def test_update_receipt_not_found(self):
+        date_text = "22-09-2018"
+        date = datetime.strptime(date_text, '%d-%m-%Y').date()
+
+        receipt = add_receipt(15, date, "GitHub", "00.000.000/0000-00", 20.0, 50.0, "Geladeira", "Isso é uma descrição bem grande", None)
+
+        with self.client:
+            response = self.client.put(
+                f'/16/update_receipt/{receipt.id}',
+                data=json.dumps({
+                        'emission_date': date.isoformat(),
+                        'emission_place': 'lalala',
+                        'cnpj': '00.000.000/0000-00',
+                        'tax_value': '123.12',
+                        'total_price': '456.45',
+                        'title': 'oi',
+                        'description': 'Geladeira Electrolux em 12x'  
+                }),
+                content_type='application/json',
+            )
+
+            data = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 404)
+            self.assertIn('Receipt not found', data['message'])
+            self.assertIn('fail', data['status'])
+
 if __name__ == '__main__':
     unittest.main()
