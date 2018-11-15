@@ -262,3 +262,50 @@ def create_tag():
     except exc.IntegrityError:
         db.session.rollback()
         return jsonify(error_response), 400
+
+@receipts_blueprint.route('/<company_id>/update_receipt/<receipt_id>', methods=['PUT'])
+def update_receipt(company_id, receipt_id):
+    error_response = {
+        'status': 'fail',
+        'message': 'Receipt not found'
+    }
+    wrong_json = {
+        'status': 'fail',
+        'message': 'Wrong JSON'
+    }
+    
+    put_data = request.get_json()
+
+    if not put_data:
+        return jsonify(wrong_json), 400
+
+    emission_date = put_data.get('emission_date')
+    emission_place = put_data.get('emission_place')
+    cnpj = put_data.get('cnpj')
+    tax_value = put_data.get('tax_value')
+    total_price = put_data.get('total_price')
+    title = put_data.get('title')
+    description = put_data.get('description')
+
+    receipt = Receipt.query.filter_by(id=int(receipt_id), company_id=int(company_id)).first()
+    
+    if not receipt:
+        return jsonify(error_response), 404
+
+    receipt.emission_date = emission_date
+    receipt.emission_place = emission_place
+    receipt.cnpj = cnpj
+    receipt.tax_value = tax_value
+    receipt.total_price = total_price
+    receipt.title = title
+    receipt.description = description
+    db.session.commit()
+
+    response = {
+        'status': 'success',
+        'data': {
+            'message': 'Receipt Updated'
+        }
+    }
+
+    return jsonify(response), 201
