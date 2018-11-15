@@ -860,6 +860,24 @@ class TestReceiptservice(BaseTestCase):
             self.assertIn('Receipt Updated', data['data']['message'])
             self.assertIn('success', data['status'])
 
+    def test_update_receipt_wrong_json(self):
+        date_text = "22-09-2018"
+        date = datetime.strptime(date_text, '%d-%m-%Y').date()
+
+        receipt = add_receipt(15, date, "GitHub", "00.000.000/0000-00", 20.0, 50.0, "Geladeira", "Isso é uma descrição bem grande", None)
+
+        with self.client:
+            response = self.client.put(
+                f'/15/update_receipt/{receipt.id}',
+                data=json.dumps({}),
+                content_type='application/json',
+            )
+
+            data = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 400)
+            self.assertIn('Wrong JSON', data['message'])
+            self.assertIn('fail', data['status'])
 
 if __name__ == '__main__':
     unittest.main()
