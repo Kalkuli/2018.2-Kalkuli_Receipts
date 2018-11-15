@@ -634,12 +634,26 @@ class TestReceiptservice(BaseTestCase):
         receipt = add_receipt(15, date, "GitHub", "00.000.000/0000-00", 20.0, 50.0, 'Geladeira', 'Geladeira Electrolux em 12x', None)
 
         with self.client:
-            response = self.client.delete(f'/receipt/{receipt.id}')
+            response = self.client.delete(f'/15/receipt/{receipt.id}')
             data = json.loads(response.data.decode())
             
             self.assertEqual(response.status_code, 200)
             self.assertIn('success', data['status'])
             self.assertIn('Receipt deleted', data['data']['message'])
+
+    def test_remove_receipt_not_found(self):
+        date_text = "22-09-2018"
+        date = datetime.strptime(date_text, '%d-%m-%Y').date()
+
+        receipt = add_receipt(16, date, "GitHub", "00.000.000/0000-00", 20.0, 50.0, 'Geladeira', 'Geladeira Electrolux em 12x', None)
+
+        with self.client:
+            response = self.client.delete(f'/15/receipt/{receipt.id}')
+            data = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 404)
+            self.assertIn('fail', data['status'])
+            self.assertIn('Receipt not found', data['message'])
 
     def test_get_tags(self):
         add_tag('Alimentação', "#874845")
