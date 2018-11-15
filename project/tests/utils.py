@@ -7,8 +7,8 @@ def add_receipt(company_id, emission_date, emission_place, cnpj, tax_value, tota
     db.session.commit()
     return receipt
 
-def add_tag(category, color):
-    tag = Tag(category, color)
+def add_tag(category, company_id, color):
+    tag = Tag(category, company_id, color)
     db.session.add(tag)
     db.session.commit()
     return tag

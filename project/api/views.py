@@ -157,12 +157,12 @@ def delete_receipt(company_id, receipt_id):
     return jsonify(response), 200
 
 
-@receipts_blueprint.route('/tags', methods=['GET'])
-def get_all_tags(): 
+@receipts_blueprint.route('/<company_id>/tags', methods=['GET'])
+def get_all_tags(company_id): 
     response = {
         'status': 'success',
         'data': {
-            'tags': [tag.to_json() for tag in Tag.query.all()]
+            'tags': [tag.to_json() for tag in Tag.query.filter_by(company_id=int(company_id))]
         }
     }
     return jsonify(response), 200
@@ -236,8 +236,9 @@ def create_tag():
     if not color:
         return jsonify(error_response_missing_color), 400
 
-    check_tag = []
-    for check_tag in Tag.query.all():
+    company_id = tag.get('company_id')
+
+    for check_tag in Tag.query.filter_by(company_id=tag.get('company_id')):
         if category == check_tag.to_json().get('category'):
             return jsonify({
                 'status': 'fail',
@@ -245,7 +246,7 @@ def create_tag():
             }), 409
 
     try:
-        tag = Tag(category, color)
+        tag = Tag(category, company_id, color)
         db.session.add(tag)
         db.session.commit()
 

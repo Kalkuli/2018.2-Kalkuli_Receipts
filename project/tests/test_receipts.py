@@ -656,11 +656,11 @@ class TestReceiptservice(BaseTestCase):
             self.assertIn('Receipt not found', data['message'])
 
     def test_get_tags(self):
-        add_tag('Alimentação', "#874845")
-        add_tag('Eletrodoméstico', '#844155')
+        add_tag('Alimentação', 15, "#874845")
+        add_tag('Eletrodoméstico', 15, '#844155')
 
         with self.client:
-            response = self.client.get('/tags')
+            response = self.client.get('/15/tags')
             data = json.loads(response.data.decode())
 
             self.assertEqual(response.status_code, 200)
@@ -680,7 +680,7 @@ class TestReceiptservice(BaseTestCase):
 
         receipt = add_receipt(15, date, "GitHub", "00.000.000/0000-00", 20.0, 50.0, "Geladeira", "Isso é uma descrição bem grande", None)
 
-        add_tag('Alimentação', '#844155')
+        add_tag('Alimentação', 15, '#844155')
 
         with self.client:
             response = self.client.patch(
@@ -703,7 +703,7 @@ class TestReceiptservice(BaseTestCase):
 
         receipt = add_receipt(16, date, "GitHub", "00.000.000/0000-00", 20.0, 50.0, "Geladeira", "Isso é uma descrição bem grande", None)
 
-        add_tag('Alimentação', '#844155')
+        add_tag('Alimentação', 15, '#844155')
 
         with self.client:
             response = self.client.patch(
@@ -748,6 +748,7 @@ class TestReceiptservice(BaseTestCase):
                 data=json.dumps({
                     "tag": {
                         "color": "black",
+                        "company_id": 15,
                         "category": "Utilitários"
                     }
                 }),
@@ -774,15 +775,16 @@ class TestReceiptservice(BaseTestCase):
             self.assertIn('wrong json', data['message'])
             self.assertIn('fail', data['status'])
 
-    def test_category_was_exist_create_tag(self):
+    def test_category_already_exists_create_tag(self):
 
-        add_tag('Utilitários', 'black')
+        add_tag('Utilitários', 15, 'black')
         with self.client:
             response = self.client.post(
                 '/create_tag',
                 data=json.dumps({
                     "tag": {
                         "color": "black",
+                        "company_id": 15,
                         "category": "Utilitários"
                     }
                 }),
