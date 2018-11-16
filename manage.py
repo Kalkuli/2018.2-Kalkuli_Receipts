@@ -12,8 +12,8 @@ COV.start()
 
 from flask.cli import FlaskGroup
 from project import app, db
-from project.api.models import Receipt, Product, Tag
 import unittest
+from populate import seedReceipts, seedTags
 
 cli = FlaskGroup(app)
 
@@ -25,14 +25,12 @@ def recreatedb():
     db.create_all()
     db.session.commit()
 
-# Create Tags in db
+# Populate Functions
 @cli.command()
-def seedtagdb():
-    db.session.add(Tag(category='Transporte', color='#79B473'))
-    db.session.add(Tag(category='Alimentação', color='#DB5461'))
-    db.session.add(Tag(category='Eletrônicos', color='#593C8F'))
-    db.session.add(Tag(category='Limpeza', color='#5CC8FF'))
-    db.session.commit()
+def seed():
+    seedTags(db)
+    seedReceipts(db)
+
 
 # Registers comand to run tests
 @cli.command()
@@ -42,7 +40,6 @@ def test():
     if result.wasSuccessful():
         return 0
     return 1
-
 
 @cli.command()
 def cov():
