@@ -17,11 +17,11 @@ class TestReceiptservice(BaseTestCase):
         add_receipt(16, date, "Gitlab", "00.000.000/0000-00", 15.0, 20.0, "Notebook", "Isso é outro description", None)
 
         with self.client:
-            response = self.client.get('/receipts')
+            response = self.client.get('/15/receipts')
             data = json.loads(response.data.decode())
 
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(len(data['data']['receipts']), 2)
+            self.assertEqual(len(data['data']['receipts']), 1)
 
             self.assertIn('success', data['status'])
 
@@ -34,16 +34,6 @@ class TestReceiptservice(BaseTestCase):
             self.assertIn('Geladeira', data['data']['receipts'][0]['title'])
             self.assertIn('Isso é uma descrição bem grande', data['data']['receipts'][0]['description'])
             self.assertEqual(None, data['data']['receipts'][0]['tag_id'])
-
-            self.assertEqual(16, data['data']['receipts'][1]['company_id'])
-            self.assertEqual(date.isoformat(), data['data']['receipts'][1]['emission_date'])
-            self.assertIn('Gitlab', data['data']['receipts'][1]['emission_place'])
-            self.assertIn('00.000.000/0000-00', data['data']['receipts'][1]['cnpj'])
-            self.assertEqual(15.0, data['data']['receipts'][1]['tax_value'])
-            self.assertEqual(20.0, data['data']['receipts'][1]['total_price'])
-            self.assertIn('Notebook', data['data']['receipts'][1]['title'])
-            self.assertIn('Isso é outro description', data['data']['receipts'][1]['description'])
-            self.assertEqual(None, data['data']['receipts'][1]['tag_id'])
 
     def test_add_receipt(self):
 
@@ -424,7 +414,7 @@ class TestReceiptservice(BaseTestCase):
         receipt = add_receipt(15, date, "GitHub", "00.000.000/0000-00", 20.0, 50.0, 'Geladeira', 'Geladeira Electrolux em 12x', None)
 
         with self.client:
-            response = self.client.get(f'/receipt/{receipt.id}')
+            response = self.client.get(f'/15/receipt/{receipt.id}')
             data = json.loads(response.data.decode())
 
             self.assertEqual(response.status_code, 200)
@@ -442,7 +432,7 @@ class TestReceiptservice(BaseTestCase):
 
     def test_get_single_receipt_no_id(self):
         with self.client:
-            response = self.client.get('/receipt/noid')
+            response = self.client.get('/2/receipt/noid')
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 404)
             self.assertIn('fail', data['status'])
@@ -450,7 +440,23 @@ class TestReceiptservice(BaseTestCase):
 
     def test_get_single_receipt_inexistent_id(self):
         with self.client:
-            response = self.client.get('/receipt/100000')
+            response = self.client.get('/1/receipt/100000')
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 404)
+            self.assertIn('fail', data['status'])
+            self.assertIn('Receipt not found', data['message'])
+    
+    def test_get_single_receipt_no_companyid(self):
+        with self.client:
+            response = self.client.get('/noid/receipt/2')
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 404)
+            self.assertIn('fail', data['status'])
+            self.assertIn('Receipt not found', data['message'])
+
+    def test_get_single_receipt_inexistent_id(self):
+        with self.client:
+            response = self.client.get('/1000000000/receipt/1')
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 404)
             self.assertIn('fail', data['status'])
@@ -472,7 +478,7 @@ class TestReceiptservice(BaseTestCase):
         with self.client:
 
             response = self.client.post(
-                '/select_date',
+                '/15/select_date',
                 data = json.dumps({
                     "period": {
                         "date_from": start.isoformat(),
@@ -494,18 +500,7 @@ class TestReceiptservice(BaseTestCase):
             self.assertEqual(50.0, data['receipts'][0]['total_price'])
             self.assertIn('Geladeira', data['receipts'][0]['title'])
             self.assertIn('Isso é uma descrição bem grande', data['receipts'][0]['description'])
-            self.assertEqual(None, data['receipts'][0]['tag_id'])
-
-            self.assertEqual(16, data['receipts'][1]['company_id'])
-            self.assertEqual(date.isoformat(), data['receipts'][1]['emission_date'])
-            self.assertIn('Gitlab', data['receipts'][1]['emission_place'])
-            self.assertIn('00.000.000/0000-00', data['receipts'][1]['cnpj'])
-            self.assertEqual(15.0, data['receipts'][1]['tax_value'])
-            self.assertEqual(20.0, data['receipts'][1]['total_price'])
-            self.assertIn('Notebook', data['receipts'][1]['title'])
-            self.assertIn('Isso é outro description', data['receipts'][1]['description'])
-            self.assertEqual(None, data['receipts'][1]['tag_id'])
-            
+            self.assertEqual(None, data['receipts'][0]['tag_id'])            
 
     def test_filter_date_no_receipts(self):
         date_from = "22-07-1900"
@@ -522,7 +517,7 @@ class TestReceiptservice(BaseTestCase):
         with self.client:
 
             response = self.client.post(
-                '/select_date',
+                '/15/select_date',
                 data = json.dumps({
                     "period": {
                         "date_from": start.isoformat(),
@@ -545,13 +540,13 @@ class TestReceiptservice(BaseTestCase):
         date = datetime.strptime(date_text, '%d-%m-%Y').date()
 
         add_receipt(15, date, "GitHub", "00.000.000/0000-00", 20.0, 50.0, "Geladeira", "Isso é uma descrição bem grande", None)
-        add_receipt(16, date, "Gitlab", "00.000.000/0000-00", 15.0, 20.0, "Notebook", "Isso é outro description", None)
+        add_receipt(15, date, "Gitlab", "00.000.000/0000-00", 15.0, 20.0, "Notebook", "Isso é outro description", None)
 
 
         with self.client:
 
             response = self.client.post(
-                '/select_date',
+                '/15/select_date',
                 data = json.dumps({
                     "period": {
                         "date_to": end.isoformat()
@@ -574,7 +569,7 @@ class TestReceiptservice(BaseTestCase):
             self.assertIn('Isso é uma descrição bem grande', data['receipts'][0]['description'])
             self.assertEqual(None, data['receipts'][0]['tag_id'])
 
-            self.assertEqual(16, data['receipts'][1]['company_id'])
+            self.assertEqual(15, data['receipts'][1]['company_id'])
             self.assertEqual(date.isoformat(), data['receipts'][1]['emission_date'])
             self.assertIn('Gitlab', data['receipts'][1]['emission_place'])
             self.assertIn('00.000.000/0000-00', data['receipts'][1]['cnpj'])
@@ -593,13 +588,13 @@ class TestReceiptservice(BaseTestCase):
         date = datetime.strptime(date_text, '%d-%m-%Y').date()
 
         add_receipt(15, date, "GitHub", "00.000.000/0000-00", 20.0, 50.0, "Geladeira", "Isso é uma descrição bem grande", None)
-        add_receipt(16, date, "Gitlab", "00.000.000/0000-00", 15.0, 20.0, "Notebook", "Isso é outro description", None)
+        add_receipt(15, date, "Gitlab", "00.000.000/0000-00", 15.0, 20.0, "Notebook", "Isso é outro description", None)
 
 
         with self.client:
 
             response = self.client.post(
-                '/select_date',
+                '/15/select_date',
                 data = json.dumps({
                     "period": {
                         "date_from": start.isoformat()
@@ -622,7 +617,7 @@ class TestReceiptservice(BaseTestCase):
             self.assertIn('Isso é uma descrição bem grande', data['receipts'][0]['description'])
             self.assertEqual(None, data['receipts'][0]['tag_id'])
 
-            self.assertEqual(16, data['receipts'][1]['company_id'])
+            self.assertEqual(15, data['receipts'][1]['company_id'])
             self.assertEqual(date.isoformat(), data['receipts'][1]['emission_date'])
             self.assertIn('Gitlab', data['receipts'][1]['emission_place'])
             self.assertIn('00.000.000/0000-00', data['receipts'][1]['cnpj'])
@@ -639,19 +634,33 @@ class TestReceiptservice(BaseTestCase):
         receipt = add_receipt(15, date, "GitHub", "00.000.000/0000-00", 20.0, 50.0, 'Geladeira', 'Geladeira Electrolux em 12x', None)
 
         with self.client:
-            response = self.client.delete(f'/receipt/{receipt.id}')
+            response = self.client.delete(f'/15/receipt/{receipt.id}')
             data = json.loads(response.data.decode())
             
             self.assertEqual(response.status_code, 200)
             self.assertIn('success', data['status'])
             self.assertIn('Receipt deleted', data['data']['message'])
 
-    def test_get_tags(self):
-        add_tag('Alimentação', "#874845")
-        add_tag('Eletrodoméstico', '#844155')
+    def test_remove_receipt_not_found(self):
+        date_text = "22-09-2018"
+        date = datetime.strptime(date_text, '%d-%m-%Y').date()
+
+        receipt = add_receipt(16, date, "GitHub", "00.000.000/0000-00", 20.0, 50.0, 'Geladeira', 'Geladeira Electrolux em 12x', None)
 
         with self.client:
-            response = self.client.get('/tags')
+            response = self.client.delete(f'/15/receipt/{receipt.id}')
+            data = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 404)
+            self.assertIn('fail', data['status'])
+            self.assertIn('Receipt not found', data['message'])
+
+    def test_get_tags(self):
+        add_tag('Alimentação', 15, "#874845")
+        add_tag('Eletrodoméstico', 15, '#844155')
+
+        with self.client:
+            response = self.client.get('/15/tags')
             data = json.loads(response.data.decode())
 
             self.assertEqual(response.status_code, 200)
@@ -671,11 +680,11 @@ class TestReceiptservice(BaseTestCase):
 
         receipt = add_receipt(15, date, "GitHub", "00.000.000/0000-00", 20.0, 50.0, "Geladeira", "Isso é uma descrição bem grande", None)
 
-        add_tag('Alimentação', '#844155')
+        add_tag('Alimentação', 15, '#844155')
 
         with self.client:
             response = self.client.patch(
-                f'/update_tag/{receipt.id}',
+                f'/15/update_tag/{receipt.id}',
                 data = json.dumps({
                     'tag_id': 1
                 }),
@@ -688,6 +697,29 @@ class TestReceiptservice(BaseTestCase):
             self.assertIn('Tag updated!', data['data']['message'])
             self.assertIn('success', data['status'])
 
+    def test_update_tag_not_found(self):
+        date_text = "22-09-2018"
+        date = datetime.strptime(date_text, '%d-%m-%Y').date()
+
+        receipt = add_receipt(16, date, "GitHub", "00.000.000/0000-00", 20.0, 50.0, "Geladeira", "Isso é uma descrição bem grande", None)
+
+        add_tag('Alimentação', 15, '#844155')
+
+        with self.client:
+            response = self.client.patch(
+                f'/15/update_tag/{receipt.id}',
+                data = json.dumps({
+                    'tag_id': 1
+                }),
+                content_type='application/json'
+            )
+
+            data = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 404)
+            self.assertIn('Receipt not found', data['message'])
+            self.assertIn('fail', data['status'])
+
     def test_detach_tag(self):
         date_text = "22-09-2018"
         date = datetime.strptime(date_text, '%d-%m-%Y').date()
@@ -696,7 +728,7 @@ class TestReceiptservice(BaseTestCase):
 
         with self.client:
             response = self.client.patch(
-                f'/update_tag/{receipt.id}',
+                f'/15/update_tag/{receipt.id}',
                 data = json.dumps({
                     'tag_id': None
                 }),
@@ -716,6 +748,7 @@ class TestReceiptservice(BaseTestCase):
                 data=json.dumps({
                     "tag": {
                         "color": "black",
+                        "company_id": 15,
                         "category": "Utilitários"
                     }
                 }),
@@ -742,15 +775,16 @@ class TestReceiptservice(BaseTestCase):
             self.assertIn('wrong json', data['message'])
             self.assertIn('fail', data['status'])
 
-    def test_category_was_exist_create_tag(self):
+    def test_category_already_exists_create_tag(self):
 
-        add_tag('Utilitários', 'black')
+        add_tag('Utilitários', 15, 'black')
         with self.client:
             response = self.client.post(
                 '/create_tag',
                 data=json.dumps({
                     "tag": {
                         "color": "black",
+                        "company_id": 15,
                         "category": "Utilitários"
                     }
                 }),
@@ -799,6 +833,78 @@ class TestReceiptservice(BaseTestCase):
             self.assertIn('Não é possível adicionar uma categoria sem cor', data['message'])
             self.assertIn('fail', data['status'])
 
+    def test_update_receipt(self):
+        date_text = "22-09-2018"
+        date = datetime.strptime(date_text, '%d-%m-%Y').date()
+
+        receipt = add_receipt(15, date, "GitHub", "00.000.000/0000-00", 20.0, 50.0, "Geladeira", "Isso é uma descrição bem grande", None)
+
+        with self.client:
+            response = self.client.put(
+                f'/15/update_receipt/{receipt.id}',
+                data=json.dumps({
+                        'emission_date': date.isoformat(),
+                        'emission_place': 'lalala',
+                        'cnpj': '00.000.000/0000-00',
+                        'tax_value': '123.12',
+                        'total_price': '456.45',
+                        'title': 'oi',
+                        'description': 'Geladeira Electrolux em 12x'  
+                }),
+                content_type='application/json',
+            )
+
+            data = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 201)
+            self.assertIn('Receipt Updated', data['data']['message'])
+            self.assertIn('success', data['status'])
+
+    def test_update_receipt_wrong_json(self):
+        date_text = "22-09-2018"
+        date = datetime.strptime(date_text, '%d-%m-%Y').date()
+
+        receipt = add_receipt(15, date, "GitHub", "00.000.000/0000-00", 20.0, 50.0, "Geladeira", "Isso é uma descrição bem grande", None)
+
+        with self.client:
+            response = self.client.put(
+                f'/15/update_receipt/{receipt.id}',
+                data=json.dumps({}),
+                content_type='application/json',
+            )
+
+            data = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 400)
+            self.assertIn('Wrong JSON', data['message'])
+            self.assertIn('fail', data['status'])
+
+    def test_update_receipt_not_found(self):
+        date_text = "22-09-2018"
+        date = datetime.strptime(date_text, '%d-%m-%Y').date()
+
+        receipt = add_receipt(15, date, "GitHub", "00.000.000/0000-00", 20.0, 50.0, "Geladeira", "Isso é uma descrição bem grande", None)
+
+        with self.client:
+            response = self.client.put(
+                f'/16/update_receipt/{receipt.id}',
+                data=json.dumps({
+                        'emission_date': date.isoformat(),
+                        'emission_place': 'lalala',
+                        'cnpj': '00.000.000/0000-00',
+                        'tax_value': '123.12',
+                        'total_price': '456.45',
+                        'title': 'oi',
+                        'description': 'Geladeira Electrolux em 12x'  
+                }),
+                content_type='application/json',
+            )
+
+            data = json.loads(response.data.decode())
+
+            self.assertEqual(response.status_code, 404)
+            self.assertIn('Receipt not found', data['message'])
+            self.assertIn('fail', data['status'])
 
 if __name__ == '__main__':
     unittest.main()

@@ -69,16 +69,19 @@ class Product(db.Model):
 class Tag(db.Model):
     __tablename__ = 'tag'
     id         = db.Column(db.Integer,  primary_key=True, autoincrement=True)
+    company_id     = db.Column(db.Integer,     nullable=False)
     category   = db.Column(db.String(50), nullable=False)
     color      = db.Column(db.String(50), nullable=True)
 
-    def __init__(self, category, color):
+    def __init__(self, category, company_id, color):
         self.category = category
+        self.company_id = company_id
         self.color = color
     
     def to_json(self):
         return {
             'id': self.id,
+            'company_id': self.company_id,
             'category': self.category,
             'color': self.color
         } 
